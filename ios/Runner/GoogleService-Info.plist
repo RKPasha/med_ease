@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1024108467361-m0o150nvf1a82e1hupkeltjes5s9qfam.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1024108467361-m0o150nvf1a82e1hupkeltjes5s9qfam</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDVpGvd-5Vrc3ikjrGT2XB8s7fRTb7xQ1g</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1024108467361</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.dukoSolutions.medEase</string>
+	<key>PROJECT_ID</key>
+	<string>medease-1f1df</string>
+	<key>STORAGE_BUCKET</key>
+	<string>medease-1f1df.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1024108467361:ios:4d1ec9223ede9d473b8ce0</string>
+</dict>
+</plist>
