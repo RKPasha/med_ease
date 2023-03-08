@@ -1,7 +1,9 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_database/firebase_database.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -27,54 +29,53 @@ class FirebaseAuthMethods {
   // KNOW MORE ABOUT THEM HERE: https://firebase.flutter.dev/docs/auth/start#auth-state
 
   // EMAIL SIGN UP
-  // Future<bool> signUpWithEmail({
-  //   required String email,
-  //   required String password,
-  //   required BuildContext context,
-  // }) async {
-  //   try {
-  //     await _auth
-  //         .createUserWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     )
-  //         .then((value) {
-  //       FirebaseDatabase.instance
-  //           .ref()
-  //           .child('users')
-  //           .child(value.user!.uid)
-  //           .set({
-  //         'uid': value.user!.uid,
-  //         'email': value.user!.email,
-  //         'createdOn': DateFormat.yMMMMd()
-  //             .format(value.user!.metadata.creationTime!)
-  //             .toString(),
-  //       });
-  //     });
-  //     if (context.mounted) {
-  //       await sendEmailVerification(context);
-  //     }
-  //     return true;
-  //   } on FirebaseAuthException catch (e) {
-  //     // if you want to display your own custom error message
-  //     if (e.code == 'weak-password') {
-  //       if (kDebugMode) {
-  //         print('The password provided is too weak.');
-  //       }
-  //     } else if (e.code == 'email-already-in-use') {
-  //       if (kDebugMode) {
-  //         print('The account already exists for that email.');
-  //       }
-  //     }
-  //     showTopSnackBar(
-  //       Overlay.of(context),
-  //       CustomSnackBar.error(
-  //         message: e.message!,
-  //       ),
-  //     ); // Displaying the usual firebase error message
-  //     return false;
-  //   }
-  // }
+  Future<String> signUpWithEmail({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String role,
+    required BuildContext context,
+  }) async {
+    String tempId = '123';
+    // "C:\Users\zain\OneDrive\Desktop\Flutter\medease-1f1df-firebase-adminsdk-za2vw-77783a3e28.json"
+    try {
+      await _auth
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(value.user!.uid)
+            .set({
+          'uid': value.user!.uid,
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': value.user!.email,
+          'role': role.toLowerCase(),
+          'createdOn': DateFormat.yMMMMd()
+              .format(value.user!.metadata.creationTime!)
+              .toString(),
+        });
+        tempId = value.user!.uid;
+      });
+      if (context.mounted) {
+        await sendEmailVerification(context);
+      }
+      return tempId;
+    } on FirebaseAuthException catch (e) {
+      // if you want to display your own custom error message
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: e.message!,
+        ),
+      ); // Displaying the usual firebase error message
+      return tempId;
+    }
+  }
 
   // EMAIL LOGIN
   Future<bool> loginWithEmail({
@@ -98,11 +99,6 @@ class FirebaseAuthMethods {
         // transition to another page instead of home screen
       } else {
         val = Future.value(true);
-        // transition to home screen
-        if (context.mounted) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-        }
       }
     } on FirebaseAuthException catch (e) {
       showTopSnackBar(
@@ -122,7 +118,8 @@ class FirebaseAuthMethods {
       showTopSnackBar(
         Overlay.of(context),
         const CustomSnackBar.info(
-          message: 'Email verification sent!',
+          message:
+              'Email verification sent! Please login to your Email and verify your account to continue.',
         ),
       );
     } on FirebaseAuthException catch (e) {

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:med_ease/pages/signup_options.dart';
+import 'package:med_ease/pages/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  static String routeName = '/splash';
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
@@ -15,10 +16,10 @@ class _SplashScreenState extends State<SplashScreen> {
   _SplashScreenState() {
     Timer(const Duration(milliseconds: 2000), () {
       setState(() {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const SignupOptions()),
-            (route) => false);
-        // Navigator.pushReplacementNamed(context, SignupOptions.routeName);
+        Navigator.of(context).popAndPushNamed(LoginScreen.routeName);
+        // Navigator.of(context).pushAndRemoveUntil(
+        //     MaterialPageRoute(builder: (context) => const LoginScreen()),
+        //     (route) => false);
       });
     });
 
@@ -57,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 130.0,
               ),
               const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ],
           ),

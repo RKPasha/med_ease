@@ -29,6 +29,13 @@
             {
               "client_id": "1024108467361-ejk059pg40lhv4n339iu1bpqgr5hvflp.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1024108467361-m0o150nvf1a82e1hupkeltjes5s9qfam.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dukoSolutions.medEase"
+              }
             }
           ]
         }

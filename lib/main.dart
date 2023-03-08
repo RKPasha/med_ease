@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:med_ease/firebase_options.dart';
-import 'package:med_ease/pages/home_page.dart';
+import 'package:med_ease/pages/Admin/Admin_Home.dart';
+import 'package:med_ease/pages/Doctor/doctor_home_page.dart';
+import 'package:med_ease/pages/Patient/Patient_Home.dart';
+import 'package:med_ease/pages/forgot_password_screen.dart';
+import 'package:med_ease/pages/login_screen.dart';
 import 'package:med_ease/pages/splash_screen.dart';
 import 'package:med_ease/services/firebase_auth_methods.dart';
 import 'package:med_ease/utils/theme_provider.dart';
@@ -46,11 +51,10 @@ class MyApp extends StatelessWidget {
                     themeProvider.isDark ? Brightness.dark : Brightness.light,
               ),
               routes: {
-                // SignupOptions.routeName: (context) => const SignupOptions(),
-                // SignupScreen.routeName: (context) => const SignupScreen(),
-                // LoginScreen.routeName: (context) => const LoginScreen(),
-                // ForgotPasswordScreen.routeName: (context) =>
-                //     const ForgotPasswordScreen(),
+                LoginScreen.routeName: (context) => const LoginScreen(),
+                ForgotPasswordScreen.routeName: (context) =>
+                    const ForgotPasswordScreen(),
+                SplashScreen.routeName: (context) => const SplashScreen(),
               },
             ),
           );
@@ -69,10 +73,44 @@ class AuthWrapper extends StatelessWidget {
       body: StreamBuilder(
         stream: context.read<FirebaseAuthMethods>().authStream(),
         builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
           if (snapshot.hasData) {
-            return HomePage(user: snapshot.data as User);
+            User? user = snapshot.data;
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user!.uid)
+                  .get(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
+                if (documentSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!documentSnapshot.hasData ||
+                    !documentSnapshot.data!.exists) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                String role = documentSnapshot.data!.get('role');
+                if (role == "admin") {
+                  return Admin_Home(user: user);
+                } else if (role == "doctor") {
+                  return DoctorHomePage(user: user);
+                } else if (role == "patient") {
+                  return Patient_Home(user: user);
+                } else {
+                  return const SplashScreen();
+                }
+              },
+            );
           } else {
-            return const SplashScreen();
+            // user is not authenticated, navigate to login screen
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacementNamed(context, '/splash');
+            });
+            return const SizedBox.shrink();
           }
         }),
       ),
