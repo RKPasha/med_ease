@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:med_ease/pages/Patient/Appointments.dart';
@@ -9,7 +10,8 @@ import '../../utils/widgets_function.dart';
 //import 'Posts.dart';
 
 class Make_Appointment extends StatefulWidget {
-  const Make_Appointment({super.key});
+  final User user;
+  const Make_Appointment({super.key, required this.user});
 
   @override
   State<Make_Appointment> createState() => _Make_Appointment();
@@ -64,7 +66,7 @@ class _Make_Appointment extends State<Make_Appointment> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Appointments()),
+              MaterialPageRoute(builder: (context) => Appointments(user: widget.user,)),
             );
           },
         ),

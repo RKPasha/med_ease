@@ -1,19 +1,21 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:med_ease/models/Patient_Model.dart';
-import 'package:med_ease/utils/constants.dart';
-import 'package:med_ease/utils/widgets_function.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
-import 'Patient_Home.dart';
 
-class Patient extends StatefulWidget {
-  const Patient({super.key});
+import '../../Models/Patient_Model.dart';
+import '../../utils/constants.dart';
+import '../../utils/widgets_function.dart';
+import '../Patient/Patient_Home.dart';
+
+class Doctor_Edit extends StatefulWidget {
+  const Doctor_Edit({super.key});
 
   @override
-  State<Patient> createState() => _PatientState();
+  State<Doctor_Edit> createState() => _Doctor_Edit();
 }
 
-class _PatientState extends State<Patient> {
+class _Doctor_Edit extends State<Doctor_Edit> {
   int _activeStepIndex = 0;
   int _selectedOption = 0;
   TextEditingController First_Name = TextEditingController();
@@ -22,7 +24,7 @@ class _PatientState extends State<Patient> {
   TextEditingController Gender = TextEditingController();
   TextEditingController Contact = TextEditingController();
   TextEditingController Address = TextEditingController();
-  TextEditingController HealthInsuranceInfo = TextEditingController();
+  TextEditingController HealthInsuranceID = TextEditingController();
   TextEditingController EmergencyContact = TextEditingController();
   TextEditingController MedicalHistory = TextEditingController();
   TextEditingController Allergies_Medication = TextEditingController();
@@ -41,25 +43,42 @@ class _PatientState extends State<Patient> {
     }
   }
 
-  getData() {
-    Patient_Model pm = Patient_Model(
-        First_Name: First_Name.text,
-        Last_Name: Last_Name.text,
-        DOB: DOB.text,
-        Gender: getGender(),
-        Contact: Contact.text,
-        Address: Address.text,
-        HealthInsuranceInfo: HealthInsuranceInfo.text,
-        EmergencyContact: EmergencyContact.text,
-        MedicalHistory: MedicalHistory.text,
-        Allergies_Medication: Allergies_Medication.text,
-        Prefrence: Prefrence.text,
-        Email: Email.text,
-        Password: Password.text,
-        ConfirmPassword: ConfirmPassword.text);
-
-    //here you can use the object pm to perform CRUD
+  populate() {
+    First_Name.text = '';
+    Last_Name.text = '';
+    DOB.text = '';
+    Gender.text = '';
+    Contact.text = '';
+    Address.text = '';
+    HealthInsuranceID.text = '';
+    EmergencyContact.text = '';
+    MedicalHistory.text = '';
+    Allergies_Medication.text = '';
+    Prefrence.text = '';
+    Email.text = '';
+    Password.text = '';    
   }
+
+  // getData() {
+  //   Patient_Model pm = Patient_Model(
+  //       First_Name: First_Name.text,
+  //       Last_Name: Last_Name.text,
+  //       DOB: DOB.text,
+  //       Gender: getGender(),
+  //       Contact: Contact.text,
+  //       Address: Address.text,
+  //       HealthInsuranceID: HealthInsuranceID.text,
+  //       EmergencyContact: EmergencyContact.text,
+  //       MedicalHistory: MedicalHistory.text,
+  //       Allergies_Medication: Allergies_Medication.text,
+  //       Prefrence: Prefrence.text,
+  //       Email: Email.text,
+  //       Information: Password.text,
+  //       id: '',
+  //       Password: Password.text);
+
+  //   //here you can use the object pm to perform CRUD
+  // }
 
   /// ***************************************************************************************
 
@@ -68,18 +87,18 @@ class _PatientState extends State<Patient> {
           state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
           isActive: _activeStepIndex >= 0,
           title: const Text('Basic Information',
-              style: TextStyle(color: Colors.blue, fontSize: 15)),
+              style: TextStyle(color: Colors.black, fontSize: 15)),
           content: Column(children: [
             TextField(
               controller: First_Name,
-              style: const TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon:
                     const Icon(Icons.person_2_outlined, color: Colors.blue),
                 fillColor: COLOR_GREY,
                 filled: true,
                 hintText: 'First Name',
-                hintStyle: const TextStyle(color: Colors.black),
+                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -87,14 +106,14 @@ class _PatientState extends State<Patient> {
             addVerticalSpace(8),
             TextField(
               controller: Last_Name,
-              style: const TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon:
                     const Icon(Icons.person_2_outlined, color: Colors.blue),
                 fillColor: COLOR_GREY,
                 filled: true,
                 hintText: 'Last Name',
-                hintStyle: const TextStyle(color: Colors.black),
+                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -102,15 +121,15 @@ class _PatientState extends State<Patient> {
             addVerticalSpace(8),
             TextField(
               controller: DOB,
-              style: const TextStyle(
-                  color: Colors.blue), //editing controller of this TextField
+              style: TextStyle(
+                  color: Colors.black), //editing controller of this TextField
               decoration: InputDecoration(
                   prefixIcon:
                       const Icon(Icons.calendar_month, color: Colors.blue),
                   fillColor: COLOR_GREY,
                   filled: true,
                   hintText: 'Date Of Birth',
-                  hintStyle: const TextStyle(color: Colors.black),
+                  hintStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10))),
               readOnly:
@@ -154,8 +173,8 @@ class _PatientState extends State<Patient> {
                     });
                   },
                 ),
-                const Text('Male', style: TextStyle(color: Colors.black)),
-                const SizedBox(
+                Text('Male', style: TextStyle(color: Colors.black)),
+                SizedBox(
                   width: 50,
                 ),
                 Radio(
@@ -167,19 +186,19 @@ class _PatientState extends State<Patient> {
                     });
                   }, // Make the radio button inactive
                 ),
-                const Text('Female', style: TextStyle(color: Colors.black)),
+                Text('Female', style: TextStyle(color: Colors.black)),
               ],
             ),
             addVerticalSpace(8),
             TextField(
               controller: Contact,
-              style: const TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.book_outlined, color: Colors.blue),
                 fillColor: COLOR_GREY,
                 filled: true,
                 hintText: 'Contact',
-                hintStyle: const TextStyle(color: Colors.black),
+                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -187,13 +206,13 @@ class _PatientState extends State<Patient> {
             addVerticalSpace(8),
             TextField(
               controller: Address,
-              style: const TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.location_on, color: Colors.blue),
                 fillColor: COLOR_GREY,
                 filled: true,
                 hintText: 'Address',
-                hintStyle: const TextStyle(color: Colors.black),
+                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -206,13 +225,13 @@ class _PatientState extends State<Patient> {
             isActive: _activeStepIndex >= 1,
             title: const Text(
               'Health Information',
-              style: TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
             ),
             content: Column(
               children: [
                 TextField(
-                  controller: HealthInsuranceInfo,
-                  style: const TextStyle(color: Colors.blue),
+                  controller: HealthInsuranceID,
+                  style: TextStyle(color: Colors.black),
                   maxLines: 3,
                   autocorrect: true,
                   decoration: InputDecoration(
@@ -221,7 +240,7 @@ class _PatientState extends State<Patient> {
                     fillColor: COLOR_GREY,
                     filled: true,
                     hintText: 'Health Insurance Information',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -229,14 +248,14 @@ class _PatientState extends State<Patient> {
                 addVerticalSpace(8),
                 TextField(
                   controller: EmergencyContact,
-                  style: const TextStyle(color: Colors.blue),
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.contact_emergency, color: Colors.blue),
                     fillColor: COLOR_GREY,
                     filled: true,
                     hintText: 'Emergency Contact',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -244,7 +263,7 @@ class _PatientState extends State<Patient> {
                 addVerticalSpace(8),
                 TextField(
                   controller: MedicalHistory,
-                  style: const TextStyle(color: Colors.blue),
+                  style: TextStyle(color: Colors.black),
                   maxLines: 4,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.medical_information_outlined,
@@ -252,7 +271,7 @@ class _PatientState extends State<Patient> {
                     fillColor: COLOR_GREY,
                     filled: true,
                     hintText: 'Medical History',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -260,14 +279,14 @@ class _PatientState extends State<Patient> {
                 addVerticalSpace(8),
                 TextField(
                   controller: Allergies_Medication,
-                  style: const TextStyle(color: Colors.blue),
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.medication, color: Colors.blue),
                     fillColor: COLOR_GREY,
                     filled: true,
-                    hintText: 'Allergies & MEdication',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintText: 'Allergies & Medication',
+                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -275,14 +294,14 @@ class _PatientState extends State<Patient> {
                 addVerticalSpace(8),
                 TextField(
                   controller: Prefrence,
-                  style: const TextStyle(color: Colors.blue),
+                  style: TextStyle(color: Colors.blue),
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.medical_services_outlined,
                         color: Colors.blue),
                     fillColor: COLOR_GREY,
                     filled: true,
                     hintText: 'Preferred Healthcare',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -295,73 +314,22 @@ class _PatientState extends State<Patient> {
             isActive: _activeStepIndex >= 2,
             title: const Text(
               'Account Setup',
-              style: TextStyle(color: Colors.blue),
+              style: TextStyle(color: Colors.black),
             ),
             content: Column(
               children: [
-                TextField(
-                  controller: Email,
-                  style: const TextStyle(color: Colors.blue),
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.email_outlined, color: Colors.blue),
-                    fillColor: COLOR_GREY,
-                    filled: true,
-                    hintText: 'Email',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: Password,
-                  style: const TextStyle(color: Colors.blue),
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.password_outlined, color: Colors.blue),
-                    fillColor: COLOR_GREY,
-                    filled: true,
-                    hintText: 'Password',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: ConfirmPassword,
-                  style: const TextStyle(color: Colors.blue),
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.password_outlined, color: Colors.blue),
-                    fillColor: COLOR_GREY,
-                    filled: true,
-                    hintText: 'Confirm Password',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                addHorizontalSpace(8),
                 Material(
-                  color: Colors.transparent,
+                  color: Color.fromRGBO(236, 242, 255, 1.0),
                   child: Container(
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(100))),
                     child: ListTile(
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.fingerprint,
                         color: Colors.blue,
                         size: 30,
                       ),
-                      title: const Text(
+                      title: Text(
                         "Add Finger Print",
                         style: TextStyle(color: Colors.black),
                       ),
@@ -369,26 +337,29 @@ class _PatientState extends State<Patient> {
                     ),
                   ),
                 ),
-                addHorizontalSpace(80),
+                Container(
+                  height: 20,
+                ),
                 Material(
-                  color: Colors.transparent,
+                  color: Color.fromRGBO(236, 242, 255, 1.0),
                   child: Container(
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(100))),
                     child: ListTile(
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.face,
                         color: Colors.blue,
                         size: 30,
                       ),
-                      title: const Text(
+                      title: Text(
                         "Add Facial Authentication",
                         style: TextStyle(color: Colors.black),
                       ),
                       onTap: () {},
                     ),
                   ),
-                )
+                ),
+                addVerticalSpace(10),
               ],
             ))
       ];
@@ -398,7 +369,7 @@ class _PatientState extends State<Patient> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: MediaQuery.of(context).size.width,
@@ -406,13 +377,13 @@ class _PatientState extends State<Patient> {
           ),
           child: Column(children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 35, left: 25),
+              padding: const EdgeInsets.only(top: 45, left: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'Lets Get You Started!',
-                    style: TextStyle(color: Colors.blue, fontSize: 25),
+                    'Edit',
+                    style: TextStyle(color: Colors.black, fontSize: 25),
                   )
                 ],
               ),
@@ -428,14 +399,7 @@ class _PatientState extends State<Patient> {
                     _activeStepIndex += 1;
                   });
                 } else {
-                  print('Submited');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Patient_Home(
-                              user: FirebaseAuth.instance.currentUser,
-                            )),
-                  );
+                  print('Submited');                  
                 }
               },
               onStepCancel: () {

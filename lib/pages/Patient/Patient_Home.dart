@@ -1,11 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:med_ease/pages/Patient/Appointments.dart';
-import 'package:med_ease/pages/Patient/Patient_Side_Menu.dart';
-import 'package:med_ease/utils/widgets_function.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
+
+import '../../utils/widgets_function.dart';
+
+import 'Appointments.dart';
+import 'Patient_Side_Menu.dart';
 
 class Patient_Home extends StatefulWidget {
-  final User? user;
+  final User user;
   const Patient_Home({super.key, required this.user});
 
   @override
@@ -13,15 +18,17 @@ class Patient_Home extends StatefulWidget {
 }
 
 class _Patient_HomeState extends State<Patient_Home> {
+  String User = 'Muneeb';
+
   @override
   Widget build(BuildContext context) {
-    String? User = widget.user!.email;
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       drawer: Patient_Side_Menu(
-        User: User!,
+        User: User,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -55,8 +62,11 @@ class _Patient_HomeState extends State<Patient_Home> {
                 ),
                 addHorizontalSpace(30),
                 const Text(
-                  'Patient Home',
-                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.w700),
+                  'Home',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 27,
+                      fontWeight: FontWeight.w700),
                 )
               ],
             ),
@@ -64,6 +74,7 @@ class _Patient_HomeState extends State<Patient_Home> {
             Text(
               'Welcome back $User !',
               style: const TextStyle(
+                color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w300,
               ),
@@ -78,11 +89,11 @@ class _Patient_HomeState extends State<Patient_Home> {
                 children: [
                   Container(
                     height: 100,
-                    width: 170,
+                    width: width * 0.42,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white),
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.blue[200]),
+                        color: Colors.blue),
                     child: const Padding(
                       padding: EdgeInsets.all(15.0),
                       child: Text(
@@ -93,11 +104,11 @@ class _Patient_HomeState extends State<Patient_Home> {
                   ),
                   Container(
                     height: 100,
-                    width: 170,
+                    width: width * 0.42,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white),
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.blue[200]),
+                        color: Colors.blue),
                     child: const Padding(
                       padding: EdgeInsets.all(15.0),
                       child: Text(
@@ -122,7 +133,9 @@ class _Patient_HomeState extends State<Patient_Home> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Appointments()),
+                            builder: (context) => Appointments(
+                                  user: widget.user,
+                                )),
                       );
                     },
                     child: Container(
@@ -131,14 +144,37 @@ class _Patient_HomeState extends State<Patient_Home> {
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.white),
                           borderRadius: BorderRadius.circular(15),
-                          color: Colors.blue[200]),
-                      child: const Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Text(
-                          "Make Appointments With Doctor.",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                          color: Colors.blue),
+                      child: Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_month_outlined,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
+                                  addHorizontalSpace(10),
+                                  const Text(
+                                    "Make Appointments With Doctor.",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.notifications,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
                     ),
                   ),
                 ],
@@ -160,7 +196,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                       child: IconButton(
                           padding: const EdgeInsets.all(0.0),
                           onPressed: () {},
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.book_outlined,
                             color: Colors.white,
                           )))
@@ -175,7 +211,7 @@ class _Patient_HomeState extends State<Patient_Home> {
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(15),
-                  color: Colors.blue[200]),
+                  color: Colors.blue),
               child: const Padding(
                 padding: EdgeInsets.all(15.0),
                 child: Text(

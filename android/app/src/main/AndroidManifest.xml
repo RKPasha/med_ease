@@ -2,7 +2,7 @@
     package="com.dukoSolutions.med_ease">
     <uses-permission android:name="android.permission.CAMERA" />
     <application
-        android:label="med_ease"
+        android:label="Med Ease"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

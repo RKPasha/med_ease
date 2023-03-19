@@ -1,4 +1,4 @@
-# med_ease
+# Med Ease
 
 A Secure Mobile Application to manage a Hospital.
 

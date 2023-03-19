@@ -1,12 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:med_ease/Models/Appointments_Model.dart';
-import 'package:med_ease/pages/Patient/Make_Appointment.dart';
-import 'package:med_ease/pages/Patient/Patient_Home.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+import '../../Models/Appointments_Model.dart';
+import 'Make_Appointment.dart';
+import 'Patient_Home.dart';
+
 class Appointments extends StatefulWidget {
-  const Appointments({super.key});
+  final User user;
+  const Appointments({super.key, required this.user});
 
   @override
   State<Appointments> createState() => _AppointmentsState();
@@ -23,8 +27,8 @@ class _AppointmentsState extends State<Appointments> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
+          icon: Icon(
+            Icons.arrow_left_sharp,
             color: Colors.white,
             size: 30,
           ),
@@ -32,8 +36,9 @@ class _AppointmentsState extends State<Appointments> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      Patient_Home(user: FirebaseAuth.instance.currentUser)),
+                  builder: (context) => Patient_Home(
+                        user: widget.user,
+                      )),
             );
           },
         ),
@@ -48,7 +53,7 @@ class _AppointmentsState extends State<Appointments> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Make_Appointment()),
+            MaterialPageRoute(builder: (context) =>  Make_Appointment(user: widget.user,)),
           );
         },
         tooltip: 'Make Appointment',
@@ -87,8 +92,8 @@ class _AppointmentsState extends State<Appointments> {
                       //key: Key(appointment![index].id),
                       onDismissed: () {
                         // Then show a snackbar.
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('dismissed')));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text('dismissed')));
                       },
                     ),
 
@@ -188,7 +193,7 @@ class _AppointmentsState extends State<Appointments> {
                                       Column(
                                         children: [
                                           Row(
-                                            children: const [
+                                            children: [
                                               CircleAvatar(
                                                 backgroundColor: Colors.white,
                                                 child: Icon(
