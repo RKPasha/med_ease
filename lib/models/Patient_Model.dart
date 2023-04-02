@@ -25,7 +25,7 @@ class Patient_Model {
     required this.Email,
     required this.Information,
     required this.Password,
-    required this.isDeleted,
+    required this.isDeleted, 
   });
   String id;
   String First_Name;
@@ -58,7 +58,7 @@ class Patient_Model {
       Allergies_Medication: json["Allergies_Medication"],
       Prefrence: json["Prefrence"],
       Email: json["Email"],
-      Information: json["Information"],
+      Information: json["Info"],
       Password: json["Password"],
       isDeleted: json["isDeleted"]);
 
@@ -93,7 +93,7 @@ class Patient_Model {
       Last_Name: data["lastName"],
       DOB: data["DOB"],
       Gender: data["gender"],
-      Contact: data["contactNo."],
+      Contact: data["contactNo"],
       Address: data["Address"],
       HealthInsuranceID: data["InsuranceID"],
       EmergencyContact: data["EmergencyContact"],

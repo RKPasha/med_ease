@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -13,6 +14,7 @@ class FirebaseAuthMethods {
   // final _auth = FirebaseAuth.instance;
   FirebaseAuthMethods(this._auth);
 
+  final _storage = const FlutterSecureStorage();
   // FOR EVERY FUNCTION HERE
   // POP THE ROUTE USING: Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
 
@@ -29,7 +31,7 @@ class FirebaseAuthMethods {
   // KNOW MORE ABOUT THEM HERE: https://firebase.flutter.dev/docs/auth/start#auth-state
 
   // EMAIL SIGN UP
-  Future<String> signUpWithEmail({
+  Future<String> signUpWithEmail_Patient({
     required String email,
     required String password,
     required String firstName,
@@ -58,11 +60,110 @@ class FirebaseAuthMethods {
           'createdOn': DateFormat.yMMMMd()
               .format(value.user!.metadata.creationTime!)
               .toString(),
+          'Address': 'Not Yet Added',
+          'AllergiesAndMedication': 'Not Yet Added',
+          'DOB': 'Not Yet Added',
+          'EmergencyContact': 'Not Yet Added',
+          'Info': 'Not Yet Added',
+          'InsuranceID': 'Not Yet Added',
+          'Medical_ID': 'Not Yet Added',
+          'PreferedHealthCare': 'Not Yet Added',
+          'contactNo': 'Not Yet Added',
+          'isDeleted': 0,
+          'gender': 'Not Yet Added'
         });
         tempId = value.user!.uid;
       });
       if (context.mounted) {
         await sendEmailVerification(context);
+      }
+      if (tempId != '123') {
+        String? savedEmail = await _storage.read(key: 'tempEmail');
+        String? savedPassword = await _storage.read(key: 'tempPassword');
+        print(savedEmail);
+        print(savedPassword);
+        if (context.mounted) {
+          loginWithEmail(
+            email: savedEmail!,
+            password: savedPassword!,
+            context: context,
+          );
+        }
+      }
+      return tempId;
+    } on FirebaseAuthException catch (e) {
+      // if you want to display your own custom error message
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: e.message!,
+        ),
+      ); // Displaying the usual firebase error message
+      return tempId;
+    }
+  }
+
+  Future<String> signUpWithEmail_Doctor({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String role,
+    required BuildContext context,
+  }) async {
+    String tempId = '123';
+    // "C:\Users\zain\OneDrive\Desktop\Flutter\medease-1f1df-firebase-adminsdk-za2vw-77783a3e28.json"
+    try {
+      await _auth
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(value.user!.uid)
+            .set({
+          'uid': value.user!.uid,
+          'role': role.toLowerCase(),
+          'createdOn': DateFormat.yMMMMd()
+              .format(value.user!.metadata.creationTime!)
+              .toString(),
+          'certification': "Not Yet Added",
+          "educationTrainingID": 0,
+          "degree": "Not Yet Added",
+          "gender": "Not Yet Added",
+          "clinic": "Not Yet Added",
+          "firstName": firstName,
+          "lastName": lastName,
+          "experience": 0,
+          "experties": "Not Yet Added",
+          "contactNo": "Not Yet Added",
+          "insuranceID": 0,
+          "liabilityID": 0,
+          "LicenseNo": "0",
+          "publication": "Not Yet Added",
+          "specialist": "Not Yet Added",
+          "email": email,
+          "isDeleted": 0
+        });
+        tempId = value.user!.uid;
+      });
+      if (context.mounted) {
+        await sendEmailVerification(context);
+      }
+      if (tempId != '123') {
+        String? savedEmail = await _storage.read(key: 'tempEmail');
+        String? savedPassword = await _storage.read(key: 'tempPassword');
+        print(savedEmail);
+        print(savedPassword);
+        if (context.mounted) {
+          loginWithEmail(
+            email: savedEmail!,
+            password: savedPassword!,
+            context: context,
+          );
+        }
       }
       return tempId;
     } on FirebaseAuthException catch (e) {
@@ -122,6 +223,7 @@ class FirebaseAuthMethods {
               'Email verification sent! Please login to your Email and verify your account to continue.',
         ),
       );
+      return;
     } on FirebaseAuthException catch (e) {
       showTopSnackBar(
         Overlay.of(context),
@@ -176,34 +278,78 @@ class FirebaseAuthMethods {
   }
 
   // DELETE ACCOUNT
-  // Future<void> deleteAccount(BuildContext context) async {
-  //   try {
-  //     //Delete user data from firebase storage first
-  //     final dbRef = FirebaseDatabase.instance.ref();
-  //     final user = dbRef.child('users/${_auth.currentUser!.uid}');
-  //     final snapshot = await user.get();
-  //     if (snapshot.exists) {
-  //       await user.remove();
-  //     }
-  //     final stRef = FirebaseStorage.instance.ref();
-  //     if (_auth.currentUser!.photoURL == null) {
-  //       final userSt =
-  //           stRef.child('user_avatars/${_auth.currentUser!.uid}.jpeg');
-  //       final snapshotSt = await userSt.getDownloadURL();
-  //       if (snapshotSt.isNotEmpty) {
-  //         await userSt.delete();
-  //       }
-  //     }
-  //     await _auth.currentUser!.delete();
-  //   } on FirebaseAuthException catch (e) {
-  //     showTopSnackBar(
-  //       Overlay.of(context),
-  //       CustomSnackBar.error(
-  //         message: e.message!,
-  //       ),
-  //     ); // Displaying the error message
-  //     // if an error of requires-recent-login is thrown, make sure to log
-  //     // in user again and then delete account.
-  //   }
-  // }
+  Future<void> deleteAccount(BuildContext context) async {
+    try {
+      //Delete user data from firebase firestore first
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .delete()
+          .then((value) {
+        //Delete user from firebase authentication
+        _auth.currentUser!.delete();
+      });
+    } on FirebaseAuthException catch (e) {
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: e.message!,
+        ),
+      ); // Displaying the error message
+      // if an error of requires-recent-login is thrown, make sure to log
+      // in user again and then delete account.
+    }
+  }
+
+  // UPDATE EMAIL
+  Future<void> updateEmail({
+    required String email,
+    required BuildContext context,
+  }) async {
+    try {
+      await _auth.currentUser!.updateEmail(email).then((value) {
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            message: 'Email updated successfully!',
+          ),
+        );
+        _auth.currentUser!.sendEmailVerification();
+        _auth.signOut();
+      });
+    } on FirebaseAuthException catch (e) {
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: e.message!,
+        ),
+      ); // Displaying the error message
+    }
+  }
+
+  // UPDATE PASSWORD
+  Future<void> updatePassword({
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      await _auth.currentUser!.updatePassword(password).then((value) {
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            message:
+                'Password updated successfully! Please login again to your account to continue.',
+          ),
+        );
+        _auth.signOut();
+      });
+    } on FirebaseAuthException catch (e) {
+      showTopSnackBar(
+        Overlay.of(context),
+        CustomSnackBar.error(
+          message: e.message!,
+        ),
+      ); // Displaying the error message
+    }
+  }
 }

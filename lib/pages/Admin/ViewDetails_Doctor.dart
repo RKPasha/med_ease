@@ -2,58 +2,59 @@ import 'package:clipboard/clipboard.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:med_ease/pages/Doctor/Manage_Patients.dart';
 
 import '../../utils/widgets_function.dart';
 import 'Admin_Drawer.dart';
 import 'Admin_Manage.dart';
 
-class ViewDetails_Patient extends StatefulWidget {
+class ViewDetails_Doctor extends StatefulWidget {
   final User user;
   final String detailsOf;
+  final String LicenseNo;
   final String First_Name;
   final String Last_Name;
-  final String DOB;
-  final String Gender;
+  final String Certification;
+  final String Clinic;
   final String Contact;
-  final String Address;
-  final String HealthInsuranceID;
-  final String EmergencyContact;
-  final String MedicalHistory;
-  final String Allergies_Medication;
-  final String Prefrence;
+  final String Degree;
+  final int EducationtrainingID;
+  final int Experience;
+  final String Experties;
+  final String Gender;
+  final int InsuranceID;
+  final int LiabilityID;
+  final String Publication;
+  final String Specialist;
   final String Email;
   final String Password;
-  final String Information;
-  final String accessedFrom;
-  final String docID;
 
-  ViewDetails_Patient(
+  ViewDetails_Doctor(
       {super.key,
       required this.user,
-      required this.detailsOf,
+      required this.LicenseNo,
       required this.First_Name,
       required this.Last_Name,
-      required this.DOB,
-      required this.Gender,
+      required this.Certification,
+      required this.Clinic,
       required this.Contact,
-      required this.Address,
-      required this.HealthInsuranceID,
-      required this.EmergencyContact,
-      required this.MedicalHistory,
-      required this.Allergies_Medication,
-      required this.Prefrence,
+      required this.Degree,
+      required this.EducationtrainingID,
+      required this.Experience,
+      required this.Experties,
+      required this.Gender,
+      required this.InsuranceID,
+      required this.LiabilityID,
+      required this.Publication,
+      required this.Specialist,
       required this.Email,
       required this.Password,
-      required this.Information,
-      required this.accessedFrom,
-      required this.docID});
+      required this.detailsOf});
 
   @override
-  State<ViewDetails_Patient> createState() => _ViewDetails_PatientState();
+  State<ViewDetails_Doctor> createState() => _ViewDetails_DoctorState();
 }
 
-class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
+class _ViewDetails_DoctorState extends State<ViewDetails_Doctor> {
   String? _user = '';
 
   @override
@@ -69,29 +70,18 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
 
     Display() {
       //print(this.show_detailsOf);
-      if (widget.detailsOf == 'Patient') {
-        return Patient_Details(width);
+      if (widget.detailsOf == 'Doctor') {
+        return Doctor_Details(width);
       }
     }
 
     Future<bool?> _onBackPressed() async {
-      if (widget.accessedFrom == "Admin") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  Admin_Manage(manage: widget.detailsOf, user: widget.user)),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Manage_Patients(
-                    user: widget.user,
-                    docId: widget.docID,
-                  )),
-        );
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Admin_Manage(manage: widget.detailsOf, user: widget.user)),
+      );
     }
 
     return WillPopScope(
@@ -130,24 +120,13 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                               color: Colors.white,
                             ),
                             onPressed: () {
-                              if (widget.accessedFrom == "Admin") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Admin_Manage(
-                                          manage: widget.detailsOf,
-                                          user: widget.user)),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Manage_Patients(
-                                            user: widget.user,
-                                            docId: widget.docID,
-                                          )),
-                                );
-                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Admin_Manage(
+                                        manage: widget.detailsOf,
+                                        user: widget.user)),
+                              );
                             },
                           );
                         }),
@@ -165,7 +144,7 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Container(
-                        height: height * 0.75,
+                        height: height * 0.8,
                         width: width * 0.9,
                         decoration: BoxDecoration(
                             color: Colors.blue,
@@ -180,7 +159,7 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
     );
   }
 
-  SingleChildScrollView Patient_Details(double width) {
+  SingleChildScrollView Doctor_Details(double width) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
@@ -254,60 +233,6 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Text(
-                        "Date Of Birth",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                widget.DOB,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(widget.DOB).then(
-                                      (value) => ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
                         "Gender",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       )
@@ -337,7 +262,7 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(widget.DOB).then(
+                                  FlutterClipboard.copy(widget.Gender).then(
                                       (value) => ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
@@ -416,7 +341,7 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Text(
-                        "Address",
+                        "Email",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       )
                     ],
@@ -440,12 +365,12 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                widget.Address,
+                                widget.Email,
                                 style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(widget.Address).then(
+                                  FlutterClipboard.copy(widget.Email).then(
                                       (value) => ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
@@ -470,7 +395,7 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Text(
-                        "Health Insurance ID",
+                        "Degree",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       )
                     ],
@@ -494,235 +419,399 @@ class _ViewDetails_PatientState extends State<ViewDetails_Patient> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                widget.HealthInsuranceID,
+                                widget.Degree,
                                 style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(
-                                          widget.HealthInsuranceID)
-                                      .then((value) => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Emergency Contact",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                widget.EmergencyContact,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(widget.EmergencyContact)
-                                      .then((value) => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Medical History",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 80,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                widget.MedicalHistory,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(widget.MedicalHistory)
-                                      .then((value) => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Allergies and Medications",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                widget.Allergies_Medication,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(
-                                          widget.Allergies_Medication)
-                                      .then((value) => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Preffered Health Care",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                widget.Prefrence,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(widget.Prefrence).then(
+                                  FlutterClipboard.copy(widget.Degree).then(
                                       (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Certification",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.Certification,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(widget.Certification)
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Experties",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.Experties,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(widget.Experties).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Specialist",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.Specialist,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(widget.Specialist).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Experience",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.Experience.toString() + ' Years',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(
+                                          widget.Experience.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Publication",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.Publication,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(widget.Publication)
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "InsuranceID",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.InsuranceID.toString(),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(
+                                          widget.InsuranceID.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "LiabilityID",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.LiabilityID.toString(),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(
+                                          widget.LiabilityID.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   'Text Copped to Clipboard!'))));

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:med_ease/pages/login_screen.dart';
+import 'package:med_ease/utils/theme_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   static String routeName = '/splash';
@@ -38,10 +39,11 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  ThemeProvider themeProvider = ThemeProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: AnimatedOpacity(
         opacity: _isVisible ? 1.0 : 0,
         duration: const Duration(milliseconds: 2000),
@@ -49,11 +51,17 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset(
-                'assets/images/logo.png',
-                width: 300.0,
-                height: 300.0,
-              ),
+              themeProvider.isDark
+                  ? Image.asset(
+                      'assets/images/logo_white.png',
+                      width: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.4,
+                    )
+                  : Image.asset(
+                      'assets/images/logo.png',
+                      width: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.4,
+                    ),
               const SizedBox(
                 height: 130.0,
               ),

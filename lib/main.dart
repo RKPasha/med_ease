@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:med_ease/firebase_options.dart';
 import 'package:med_ease/pages/Admin/Admin_Home.dart';
-import 'package:med_ease/pages/Doctor/doctor_home_page.dart';
+import 'package:med_ease/pages/Doctor/Doctor_Home.dart';
 import 'package:med_ease/pages/Patient/Patient_Home.dart';
 import 'package:med_ease/pages/forgot_password_screen.dart';
 import 'package:med_ease/pages/login_screen.dart';
@@ -97,7 +97,7 @@ class AuthWrapper extends StatelessWidget {
                 if (role == "admin") {
                   return Admin_Home(user: user);
                 } else if (role == "doctor") {
-                  return DoctorHomePage(user: user);
+                  return Doctor_Home(user: user);
                 } else if (role == "patient") {
                   return Patient_Home(user: user);
                 } else {

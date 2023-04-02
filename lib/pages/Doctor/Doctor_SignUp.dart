@@ -1,26 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:med_ease/models/ProfessionalInformation_Model.dart';
+import 'package:med_ease/pages/Doctor/Doctor_Home.dart';
 import 'package:med_ease/services/remort_services.dart';
 
 import '../../models/Doctors_Model.dart';
+import '../../models/ProfessionalInformation_Model.dart';
 import '../../utils/widgets_function.dart';
-import 'Admin_Manage.dart';
 
-class Doctor_Edit extends StatefulWidget {
+class Doctor_SignUp extends StatefulWidget {
   final User user;
   final Doctor_Model dm;
-  const Doctor_Edit({super.key, required this.dm, required this.user});
+  const Doctor_SignUp({super.key, required this.dm, required this.user});
 
   @override
-  State<Doctor_Edit> createState() => _Doctor_Edit();
+  State<Doctor_SignUp> createState() => _Doctor_SignUp();
 }
 
-class _Doctor_Edit extends State<Doctor_Edit> {
+class _Doctor_SignUp extends State<Doctor_SignUp> {
   int _activeStepIndex = 0;
   int _selectedOption = 0;
   String id = '';
+  int maxId = 0;
   bool isLoaded = false;
+  List<ProfessionalInformation_Model>? allinfo;
   TextEditingController First_Name = TextEditingController();
   TextEditingController Last_Name = TextEditingController();
   TextEditingController Certification = TextEditingController();
@@ -31,7 +33,6 @@ class _Doctor_Edit extends State<Doctor_Edit> {
   TextEditingController Email = TextEditingController();
   TextEditingController Experience = TextEditingController();
   TextEditingController Experties = TextEditingController();
-  TextEditingController Gender = TextEditingController();
   TextEditingController InsuranceID = TextEditingController();
   TextEditingController LiabilityID = TextEditingController();
   TextEditingController LicenseNo = TextEditingController();
@@ -56,28 +57,10 @@ class _Doctor_Edit extends State<Doctor_Edit> {
     }
   }
 
-  loading() {
-    return Container(
-      color: Colors.white,
-      child: const Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  List<ProfessionalInformation_Model>? info;
-  getProfessionalInfo() async {
-    info = await remort_services().getProfessionalInfoByDoc(id);
-    if (info != null) {
-      for (var i in info!) {
-        EducationtrainingID.text = i.EducationTrainingDetails;
-        InsuranceID.text = i.InsuranceInformation;
-        LiabilityID.text = i.LiabilityInsuranceInformation;
-      }
-    }
-  }
-
   populate() {
+    fetchID();
+    print(maxId);
     id = widget.dm.id;
-    getProfessionalInfo();
     First_Name.text = widget.dm.First_Name;
     Last_Name.text = widget.dm.Last_Name;
     Certification.text = widget.dm.Certification;
@@ -91,9 +74,17 @@ class _Doctor_Edit extends State<Doctor_Edit> {
     LicenseNo.text = widget.dm.LicenseNo;
     Publication.text = widget.dm.Publication;
     Specialist.text = widget.dm.Specialist;
-    setState(() {
-      isLoaded = true;
-    });
+    LiabilityID.text = widget.dm.LiabilityID.toString();
+    EducationtrainingID.text = widget.dm.EducationTrainingID.toString();
+    InsuranceID.text = widget.dm.InsuranceID.toString();
+    isLoaded = true;
+  }
+
+  loading() {
+    return Container(
+      color: Colors.white,
+      child: const Center(child: CircularProgressIndicator()),
+    );
   }
 
   getdata() {
@@ -103,11 +94,11 @@ class _Doctor_Edit extends State<Doctor_Edit> {
         Certification: Certification.text,
         Gender: GetGender(),
         Last_Name: Last_Name.text,
-        Experience: 0,
+        Experience: int.parse(Experience.text),
         Experties: Experties.text,
         Contact: Contact.text,
-        InsuranceID: 0,
-        LiabilityID: 0,
+        InsuranceID: maxId,
+        LiabilityID: maxId,
         LicenseNo: LicenseNo.text,
         Publication: Publication.text,
         Specialist: Specialist.text,
@@ -115,39 +106,43 @@ class _Doctor_Edit extends State<Doctor_Edit> {
         isDeleted: 0,
         Clinic: Clinic.text,
         Degree: Degree.text,
-        EducationTrainingID: 0);
+        EducationTrainingID: maxId);
   }
 
   bool validate() {
     if (First_Name.text != '' &&
+        First_Name.text != 'Not Yet Added' &&
         Last_Name.text != '' &&
+        Last_Name.text != 'Not Yet Added' &&
         Certification.text != '' &&
+        Certification.text != 'Not Yet Added' &&
         Clinic.text != '' &&
+        Clinic.text != 'Not Yet Added' &&
         Contact.text != '' &&
+        Contact.text != 'Not Yet Added' &&
         Degree.text != '' &&
+        Degree.text != 'Not Yet Added' &&
         EducationtrainingID.text != '' &&
+        EducationtrainingID.text != 'Not Yet Added' &&
         Email.text != '' &&
+        Email.text != 'Not Yet Added' &&
         Experience.text != '' &&
+        Experience.text != 'Not Yet Added' &&
         Experties.text != '' &&
+        Experties.text != 'Not Yet Added' &&
         _selectedOption != 0 &&
         InsuranceID.text != '' &&
+        InsuranceID.text != 'Not Yet Added' &&
         LiabilityID.text != '' &&
+        LiabilityID.text != 'Not Yet Added' &&
         LicenseNo.text != '' &&
+        LicenseNo.text != 'Not Yet Added' &&
         Publication.text != '' &&
-        Specialist.text != '') {
+        Publication.text != 'Not Yet Added') {
       return true;
     } else {
       return false;
     }
-  }
-
-  profesionalInformation() async {
-    await remort_services().Add_ProffeessionalInformation(
-        EducationtrainingID.text,
-        InsuranceID.text,
-        LiabilityID.text,
-        id,
-        widget.dm.InsuranceID);
   }
 
   Future<bool> Update() async {
@@ -158,6 +153,33 @@ class _Doctor_Edit extends State<Doctor_Edit> {
     } else {
       return false;
     }
+  }
+
+  fetchID() async {
+    allinfo = await remort_services().getAllProfessionalInfo();
+    if (allinfo == null) {
+      setState(() {
+        maxId = 1;
+      });
+    } else {
+      List<int> Ids = [];
+      for (var i in allinfo!) {
+        Ids.add(i.ID);
+      }
+      maxId = Ids.reduce((curr, next) => curr > next ? curr : next);
+      setState(() {
+        maxId += 1;
+      });
+    }
+  }
+
+  profesionalInformation() async {
+    await remort_services().Add_ProffeessionalInformation(
+        EducationtrainingID.text,
+        InsuranceID.text,
+        LiabilityID.text,
+        id,
+        maxId);
   }
 
   /// ***************************************************************************************
@@ -173,88 +195,107 @@ class _Doctor_Edit extends State<Doctor_Edit> {
           isActive: _activeStepIndex >= 0,
           title:
               const Text('Basic Information', style: TextStyle(fontSize: 15)),
-          content: Column(children: [
-            addVerticalSpace(8),
-            TextField(
-              controller: First_Name,
-              decoration: InputDecoration(
-                prefixIcon:
-                    const Icon(Icons.person_2_outlined, color: Colors.blue),
-                labelText: 'First Name',
-                filled: true,
-                hintText: 'First Name',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            addVerticalSpace(8),
-            TextField(
-              controller: Last_Name,
-              decoration: InputDecoration(
-                prefixIcon:
-                    const Icon(Icons.person_2_outlined, color: Colors.blue),
-                labelText: 'Last Name',
-                filled: true,
-                hintText: 'Last Name',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            addVerticalSpace(8),
-            TextField(
-              controller: Contact,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.book_outlined, color: Colors.blue),
-                labelText: 'Contact',
-                filled: true,
-                hintText: 'Contact',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            addVerticalSpace(8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Radio(
-                  value: 1,
-                  groupValue: _selectedOption,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedOption = 1;
-                    });
-                  },
+          content: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: Column(children: [
+              addVerticalSpace(8),
+              TextField(
+                onTap: () {
+                  if (First_Name.text == "Not Yet Added") {
+                    Last_Name.text = "";
+                  }
+                },
+                controller: First_Name,
+                decoration: InputDecoration(
+                  prefixIcon:
+                      const Icon(Icons.person_2_outlined, color: Colors.blue),
+                  labelText: 'First Name',
+                  hintText: 'First Name',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
-                const Text('Male'),
-                const SizedBox(
-                  width: 50,
-                ),
-                Radio(
-                  value: 2,
-                  groupValue: _selectedOption,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedOption = 2;
-                    });
-                  }, // Make the radio button inactive
-                ),
-                const Text('Female'),
-              ],
-            ),
-            addVerticalSpace(8),
-            TextField(
-              enabled: false,
-              controller: Email,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.email, color: Colors.blue),
-                labelText: 'Email',
-                filled: true,
-                hintText: 'Email',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
-            ),
-          ]),
+              addVerticalSpace(8),
+              TextField(
+                onTap: () {
+                  if (Last_Name.text == "Not Yet Added") {
+                    Last_Name.text = "";
+                  }
+                },
+                controller: Last_Name,
+                decoration: InputDecoration(
+                  prefixIcon:
+                      const Icon(Icons.person_2_outlined, color: Colors.blue),
+                  labelText: 'Last Name',
+                  hintText: 'Last Name',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              addVerticalSpace(8),
+              TextField(
+                onTap: () {
+                  if (Contact.text == "Not Yet Added") {
+                    Contact.text = "";
+                  }
+                },
+                controller: Contact,
+                decoration: InputDecoration(
+                  prefixIcon:
+                      const Icon(Icons.book_outlined, color: Colors.blue),
+                  labelText: 'Contact',
+                  hintText: 'Contact',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              addVerticalSpace(8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Radio(
+                    value: 1,
+                    groupValue: _selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedOption = 1;
+                      });
+                    },
+                  ),
+                  const Text('Male', style: TextStyle()),
+                  const SizedBox(
+                    width: 50,
+                  ),
+                  Radio(
+                    value: 2,
+                    groupValue: _selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedOption = 2;
+                      });
+                    }, // Make the radio button inactive
+                  ),
+                  const Text('Female', style: TextStyle()),
+                ],
+              ),
+              addVerticalSpace(8),
+              TextField(
+                onTap: () {
+                  if (Email.text == "Not Yet Added") {
+                    Email.text = "";
+                  }
+                },
+                controller: Email,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.email, color: Colors.blue),
+                  labelText: 'Email',
+                  hintText: 'Email',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ]),
+          ),
         ),
         Step(
             state:
@@ -262,18 +303,23 @@ class _Doctor_Edit extends State<Doctor_Edit> {
             isActive: _activeStepIndex >= 1,
             title: const Text(
               'Professional Information',
+              style: TextStyle(),
             ),
             content: Column(
               children: [
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Degree.text == "Not Yet Added") {
+                      Degree.text = "";
+                    }
+                  },
                   controller: Degree,
                   autocorrect: true,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.contact_page_outlined,
                         color: Colors.blue),
                     labelText: 'Degree',
-                    filled: true,
                     hintText: 'Degree',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -281,12 +327,52 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Certification.text == "Not Yet Added") {
+                      Certification.text = "";
+                    }
+                  },
+                  controller: Certification,
+                  autocorrect: true,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.contact_page_outlined,
+                        color: Colors.blue),
+                    labelText: 'Certification',
+                    hintText: 'Certification',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+                addVerticalSpace(8),
+                TextField(
+                  onTap: () {
+                    if (Clinic.text == "Not Yet Added") {
+                      Clinic.text = "";
+                    }
+                  },
+                  controller: Clinic,
+                  autocorrect: true,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.contact_page_outlined,
+                        color: Colors.blue),
+                    labelText: 'Clinic',
+                    hintText: 'Clinic',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+                addVerticalSpace(8),
+                TextField(
+                  onTap: () {
+                    if (EducationtrainingID.text == "Not Yet Added") {
+                      EducationtrainingID.text = "";
+                    }
+                  },
                   controller: EducationtrainingID,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.perm_identity, color: Colors.blue),
-                    labelText: 'Educationtraining',
-                    filled: true,
+                    labelText: 'Education Training',
                     hintText: 'Education Training',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -294,12 +380,16 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Experience.text == "0") {
+                      Experience.text = "";
+                    }
+                  },
                   controller: Experience,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.timelapse_outlined,
                         color: Colors.blue),
                     labelText: 'Experience',
-                    filled: true,
                     hintText: 'Experience',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -307,11 +397,15 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Experties.text == "Not Yet Added") {
+                      Experties.text = "";
+                    }
+                  },
                   controller: Experties,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.medication, color: Colors.blue),
-                    filled: true,
                     hintText: 'Experties',
                     labelText: 'Experties',
                     border: OutlineInputBorder(
@@ -320,11 +414,15 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(10),
                 TextFormField(
+                  onTap: () {
+                    if (InsuranceID.text == "Not Yet Added") {
+                      InsuranceID.text = "";
+                    }
+                  },
                   controller: InsuranceID,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.perm_identity, color: Colors.blue),
-                    filled: true,
                     hintText: 'Insurance',
                     labelText: 'Insurance',
                     border: OutlineInputBorder(
@@ -333,12 +431,16 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (LiabilityID.text == "Not Yet Added") {
+                      LiabilityID.text = "";
+                    }
+                  },
                   controller: LiabilityID,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.perm_identity, color: Colors.blue),
                     labelText: 'Liability',
-                    filled: true,
                     hintText: 'Liability',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -346,12 +448,16 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (LicenseNo.text == "Not Yet Added") {
+                      LicenseNo.text = "";
+                    }
+                  },
                   controller: LicenseNo,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.perm_identity, color: Colors.blue),
                     labelText: 'LicenseNo',
-                    filled: true,
                     hintText: 'LicenseNo',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -359,12 +465,16 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Publication.text == "Not Yet Added") {
+                      Publication.text = "";
+                    }
+                  },
                   controller: Publication,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.book_rounded, color: Colors.blue),
                     labelText: 'Publications',
-                    filled: true,
                     hintText: 'Publications',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -372,12 +482,16 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                 ),
                 addVerticalSpace(8),
                 TextField(
+                  onTap: () {
+                    if (Specialist.text == "Not Yet Added") {
+                      Specialist.text = "";
+                    }
+                  },
                   controller: Specialist,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.person_outline_outlined,
                         color: Colors.blue),
                     labelText: 'Specialist',
-                    filled: true,
                     hintText: 'Specialist',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -388,12 +502,15 @@ class _Doctor_Edit extends State<Doctor_Edit> {
       ];
 
   Future<bool?> _onBackPressed() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) =>
-              Admin_Manage(manage: 'Doctor', user: widget.user)),
-    );
+    if (validate()) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Doctor_Home(user: widget.user)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(' Input Missing or Not yet Filled!')));
+    }
   }
 
   @override
@@ -439,18 +556,19 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                                       color: Colors.white,
                                     ),
                                     onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Admin_Manage(
-                                                manage: 'Doctor',
-                                                user: widget.user)),
-                                      );
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Update Un-Successful!')));
+                                      if (validate()) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Doctor_Home(
+                                                  user: widget.user)),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    ' Input Missing or Not yet Filled!')));
+                                      }
                                     },
                                   );
                                 }),
@@ -488,15 +606,15 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Admin_Manage(
+                                    builder: (context) => Doctor_Home(
                                           user: widget.user,
-                                          manage: 'Doctor',
                                         )),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text('Input Missing!')));
+                                      content: Text(
+                                          'Input missing or Not yet Filled!')));
                             }
                           } catch (e) {
                             print(e);
@@ -536,9 +654,6 @@ class _Doctor_Edit extends State<Doctor_Edit> {
                               ),
                               Expanded(
                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      fixedSize: const Size(
-                                          double.infinity, double.infinity)),
                                   onPressed: controls.onStepContinue,
                                   child: (isLastStep)
                                       ? const Text('Update')

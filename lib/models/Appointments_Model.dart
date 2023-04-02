@@ -14,37 +14,49 @@ String postModelToJson(List<Appointments_Model> data) =>
 class Appointments_Model {
   Appointments_Model({
     required this.id,
+    required this.patient_id,
+    required this.doctor_id,
     required this.time,
-    required this.status,
+    required this.isapproved,
     required this.doctor,
     required this.clinic,
     required this.date,
+    required this.isdeleted,
   });
 
   String id;
+  String patient_id;
+  String doctor_id;
   String time;
-  String status;
+  int isapproved;
   String doctor;
   String date;
   String clinic;
+  int isdeleted;
 
   factory Appointments_Model.fromJson(Map<String, dynamic> json) =>
       Appointments_Model(
         id: json["id"],
+        patient_id: json['patient_id'],
+        doctor_id: json['doctor_id'],
         time: json["time"],
         doctor: json["doctor"],
-        status: json["status"],
+        isapproved: json["isapproved"],
         date: json["date"],
         clinic: json["clinic"],
+        isdeleted: json['isdeleted'],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "title": time,
-        "description": doctor,
-        "status": status,
+        "time": time,
+        "doctor_id": doctor_id,
+        "patient_id": patient_id,
+        "doctor": doctor,
+        "isapproved": isapproved,
         "date": date,
-        "deadline": clinic,
+        "clinic": clinic,
+        "isdeleted": isdeleted
       };
 
   factory Appointments_Model.fromSnapshot(
@@ -55,10 +67,13 @@ class Appointments_Model {
     // print(data["status"]);
     return Appointments_Model(
         id: document.id,
-        time: data["TaskDes"],
-        status: data["Status"],
-        doctor: data["Task"],
+        doctor_id: data["DoctorID"],
+        patient_id: data["PatientID"],
+        time: data["Time"],
+        isapproved: data["isApproved"],
+        doctor: data["Doctor"],
         date: data["Date"],
-        clinic: data["DeadLine"]);
+        clinic: data["Clinic"],
+        isdeleted: data["isDeleted"]);
   }
 }

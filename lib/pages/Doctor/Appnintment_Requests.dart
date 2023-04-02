@@ -1,31 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
+import 'package:med_ease/pages/Doctor/Doctor_Home.dart';
 import '../../models/Appointments_Model.dart';
+import '../../models/Doctors_Model.dart';
 import '../../services/remort_services.dart';
-import 'Make_Appointment.dart';
-import 'Patient_Home.dart';
+import '../Patient/Make_Appointment.dart';
+import '../Patient/Patient_Home.dart';
 
-class Appointments extends StatefulWidget {
+class Appointment_Request extends StatefulWidget {
   final User user;
-  final String patient_ID;
-  const Appointments({super.key, required this.user, required this.patient_ID});
+
+  final String doc_ID;
+  const Appointment_Request({
+    super.key,
+    required this.user,
+    required this.doc_ID,
+  });
 
   @override
-  State<Appointments> createState() => _AppointmentsState();
+  State<Appointment_Request> createState() => _Appointment_RequestState();
 }
 
-class _AppointmentsState extends State<Appointments> {
+class _Appointment_RequestState extends State<Appointment_Request> {
   bool IsLoaded = false;
   List<Appointments_Model>? appointment;
 
-  Widget Pending_Icon = const Icon(
+  Widget Pending_Icon = Icon(
     Icons.pending_actions_outlined,
     color: Colors.blue,
   );
 
-  Widget Approved_Icon = const Icon(
+  Widget Approved_Icon = Icon(
     Icons.check_circle,
     color: Colors.blue,
   );
@@ -39,7 +47,9 @@ class _AppointmentsState extends State<Appointments> {
   }
 
   Future<bool> getAppointments() async {
-    appointment = await remort_services().getAppointments();
+    print(widget.doc_ID);
+    appointment =
+        await remort_services().getAppointments_byDoctor(widget.doc_ID);
     if (appointment != null) {
       setState(() {
         IsLoaded = true;
@@ -72,7 +82,7 @@ class _AppointmentsState extends State<Appointments> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => Patient_Home(
+          builder: (context) => Doctor_Home(
                 user: widget.user,
               )),
     );
@@ -100,7 +110,7 @@ class _AppointmentsState extends State<Appointments> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Patient_Home(
+                    builder: (context) => Doctor_Home(
                           user: widget.user,
                         )),
               );
@@ -108,7 +118,7 @@ class _AppointmentsState extends State<Appointments> {
           ),
           centerTitle: true,
           title: const Text(
-            "Appointments",
+            "Appointment Requests",
             style: TextStyle(color: Color.fromRGBO(255, 254, 251, 0.992)),
           ),
           //backgroundColor: Color.fromRGBO(68, 60, 104, 1.0),
@@ -151,6 +161,7 @@ class _AppointmentsState extends State<Appointments> {
                         // A SlidableAction can have an icon and/or a label.
                         SlidableAction(
                           onPressed: null,
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.blue,
                           icon: Icons.delete,
                           label: 'Swipe Right to Delete',
@@ -167,31 +178,33 @@ class _AppointmentsState extends State<Appointments> {
                           flex: 2,
                           onPressed: (context) {
                             if (appointment![index].isapproved == 0) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Make_Appointment(
-                                          user: widget.user,
-                                          appointment: 'Update',
-                                          patient_ID: widget.patient_ID,
-                                          appointment_ID:
-                                              appointment![index].id,
-                                        )),
-                              );
+                              try {
+                                remort_services().Approve_Appointment(
+                                    1, appointment![index].id);
+                                setState(() {
+                                  getAppointments();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('Appointment Approved!')));
+                              } catch (e) {
+                                print(e);
+                              }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'Cannot Edit! Appointment Approved!')));
+                                      content: Text('Already Approved!')));
                             }
                           },
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.blue,
-                          icon: Icons.edit,
-                          label: 'Edit',
+                          icon: Icons.check_circle,
+                          label: 'Approve',
                         ),
                       ],
                     ),
-                    child: SizedBox(
+                    child: Container(
                         width: 10000,
                         height: 160,
                         child: GestureDetector(
@@ -266,7 +279,7 @@ class _AppointmentsState extends State<Appointments> {
                                                                 .doctor),
                                                     const TextSpan(
                                                         text: '\nClinic : ',
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontSize: 15,
                                                             fontWeight:
                                                                 FontWeight.w800,

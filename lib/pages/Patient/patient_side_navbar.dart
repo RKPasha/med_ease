@@ -2,25 +2,38 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:med_ease/models/Appointments_Model.dart';
+import 'package:med_ease/models/Patient_Model.dart';
 import 'package:med_ease/models/Report_Model.dart';
-import 'package:med_ease/pages/Admin/Admin_Manage.dart';
-import 'package:med_ease/pages/Admin/admin_settings.dart';
 import 'package:med_ease/pages/Doctor/Manage_Reports.dart';
+import 'package:med_ease/pages/Patient/Appointments.dart';
+import 'package:med_ease/pages/Patient/Manage_Info.dart';
+import 'package:med_ease/pages/Patient/Patient_Reports.dart';
+import 'package:med_ease/pages/general_settings.dart';
 import 'package:med_ease/services/firebase_auth_methods.dart';
 import 'package:med_ease/services/remort_services.dart';
 import 'package:med_ease/utils/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class AdminSideNav extends StatefulWidget {
+class PatientSideNav extends StatefulWidget {
   final User user;
-  // final UsersModel usersModel;
-  const AdminSideNav({super.key, required this.user});
+  final String name;
+  final String id;
+  final Patient_Model pm;
+  final List<Appointments_Model>? approvedappointments;
+  const PatientSideNav(
+      {super.key,
+      required this.user,
+      required this.name,
+      this.approvedappointments,
+      required this.id,
+      required this.pm});
 
   @override
-  State<AdminSideNav> createState() => _AdminSideNavState();
+  State<PatientSideNav> createState() => _PatientSideNavState();
 }
 
-class _AdminSideNavState extends State<AdminSideNav> {
+class _PatientSideNavState extends State<PatientSideNav> {
   ThemeProvider themeProvider = ThemeProvider();
   final _storage = const FlutterSecureStorage();
   _SupportState _supportState = _SupportState.unknown;
@@ -72,9 +85,9 @@ class _AdminSideNavState extends State<AdminSideNav> {
               children: [
                 UserAccountsDrawerHeader(
                   // accountName: Text(widget.usersModel.name ?? ''),
-                  accountName: const Text(
-                    'Admin',
-                    style: TextStyle(color: Colors.black),
+                  accountName: Text(
+                    widget.name,
+                    style: const TextStyle(color: Colors.black),
                   ),
                   accountEmail: Text(
                     widget.user.email!,
@@ -88,69 +101,49 @@ class _AdminSideNavState extends State<AdminSideNav> {
                   ),
                 ),
                 ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text('Doctors'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Admin_Manage(
-                            manage: 'Doctors',
-                            user: widget.user,
-                          ),
-                        ),
-                      );
-                    }),
-                ListTile(
                   leading: const Icon(Icons.person),
-                  title: const Text('Patients'),
+                  title: const Text('Profile'),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Admin_Manage(
-                          manage: 'Patients',
+                        builder: (context) => Manage_Info(
                           user: widget.user,
+                          pm: widget.pm,
+                          ID: widget.id,
                         ),
                       ),
                     );
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.file_copy_rounded),
-                  title: const Text('Reports'),
-                  onTap: () {
-                    if (allReports!.isNotEmpty) {
+                    leading: const Icon(Icons.calendar_month),
+                    title: const Text('Appointments'),
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Manage_Reports(
-                                  user: widget.user,
-                                  accessedFrom: 'Admin',
-                                  docId: '',
-                                )),
-                      );
-                    } else {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Operation Denied!'),
-                          content: const Text('No Record Found!'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Cancel'),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'OK'),
-                              child: const Text('OK'),
-                            ),
-                          ],
+                          builder: (context) => Appointments(
+                            user: widget.user,
+                            patient_ID: widget.id,
+                          ),
                         ),
                       );
-                    }
-                  },
-                ),
+                    }),
+                ListTile(
+                    leading: const Icon(Icons.file_copy_rounded),
+                    title: const Text('Reports'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Patient_Reports(
+                            user: widget.user,
+                            patientId: widget.id,
+                          ),
+                        ),
+                      );
+                    }),
                 // ListTile(
                 //   leading: const Icon(Icons.notifications),
                 //   title: const Text('Notifications'),
@@ -179,7 +172,7 @@ class _AdminSideNavState extends State<AdminSideNav> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AdminSettings(),
+                        builder: (context) => const GeneralSettings(),
                       ),
                     );
                   },
@@ -212,56 +205,6 @@ class _AdminSideNavState extends State<AdminSideNav> {
                         }
                       },
                     )),
-                // ListTile(
-                //   leading: const Icon(Icons.delete_forever),
-                //   title: const Text('Delete Account'),
-                //   onTap: () {
-                //     //show alert dialog to confirm account deletion
-                //     showDialog(
-                //       context: context,
-                //       builder: (context) => AlertDialog(
-                //         title: Row(
-                //           children: const [
-                //             Icon(
-                //               Icons.warning_amber_rounded,
-                //               color: Colors.red,
-                //             ),
-                //             Text('  Delete Account'),
-                //           ],
-                //         ),
-                //         content: const Text(
-                //             'Are you sure you want to delete your account?'),
-                //         actions: [
-                //           TextButton(
-                //             onPressed: () {
-                //               Navigator.of(context).pop();
-                //             },
-                //             child: const Text('Cancel'),
-                //           ),
-                //           TextButton(
-                //             onPressed: () async {
-                //               Navigator.of(context).pop();
-                //               showDialog(
-                //                 context: context,
-                //                 barrierDismissible: false,
-                //                 builder: (context) => const Center(
-                //                   child: CircularProgressIndicator(),
-                //                 ),
-                //               );
-                //               // await context
-                //               //     .read<FirebaseAuthMethods>()
-                //               //     .deleteAccount(context);
-                //             },
-                //             child: const Text(
-                //               'Delete',
-                //               style: TextStyle(color: Colors.red),
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     );
-                //   },
-                // ),
                 const Divider(),
                 ListTile(
                   title: const Text('Sign Out'),

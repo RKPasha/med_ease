@@ -1,23 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
 import 'package:med_ease/pages/Admin/Admin_Manage.dart';
+import 'package:med_ease/pages/Doctor/Manage_Patients.dart';
 import 'package:med_ease/services/remort_services.dart';
-
-import '../../Models/Patient_Model.dart';
+import '../../models/Patient_Model.dart';
 import '../../utils/constants.dart';
 import '../../utils/widgets_function.dart';
-import '../Patient/Patient_Home.dart';
-import 'ViewDetails_Patient.dart';
 
 class Patient_Edit extends StatefulWidget {
   final User user;
   final Patient_Model pm;
   final String ID;
+  final String accessedFrom;
+  final String docID;
   const Patient_Edit(
-      {super.key, required this.user, required this.pm, required this.ID});
+      {super.key,
+      required this.user,
+      required this.pm,
+      required this.ID,
+      required this.accessedFrom,
+      required this.docID});
 
   @override
   State<Patient_Edit> createState() => _Patient_Edit();
@@ -111,19 +114,18 @@ class _Patient_Edit extends State<Patient_Edit> {
         Step(
           state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
           isActive: _activeStepIndex >= 0,
-          title: const Text('Basic Information',
-              style: TextStyle(color: Colors.black, fontSize: 15)),
+          title:
+              const Text('Basic Information', style: TextStyle(fontSize: 15)),
           content: Column(children: [
+            addVerticalSpace(10),
             TextField(
               controller: First_Name,
-              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon:
                     const Icon(Icons.person_2_outlined, color: Colors.blue),
-                fillColor: COLOR_GREY,
+                labelText: "First Name",
                 filled: true,
                 hintText: 'First Name',
-                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -131,30 +133,25 @@ class _Patient_Edit extends State<Patient_Edit> {
             addVerticalSpace(8),
             TextField(
               controller: Last_Name,
-              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon:
                     const Icon(Icons.person_2_outlined, color: Colors.blue),
-                fillColor: COLOR_GREY,
+                labelText: "Last Name",
                 filled: true,
                 hintText: 'Last Name',
-                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),
             addVerticalSpace(8),
             TextField(
-              controller: DOB,
-              style: TextStyle(
-                  color: Colors.black), //editing controller of this TextField
+              controller: DOB, //editing controller of this TextField
               decoration: InputDecoration(
                   prefixIcon:
                       const Icon(Icons.calendar_month, color: Colors.blue),
-                  fillColor: COLOR_GREY,
+                  labelText: "Date Of Birth",
                   filled: true,
                   hintText: 'Date Of Birth',
-                  hintStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10))),
               readOnly:
@@ -198,8 +195,8 @@ class _Patient_Edit extends State<Patient_Edit> {
                     });
                   },
                 ),
-                Text('Male', style: TextStyle(color: Colors.black)),
-                SizedBox(
+                const Text('Male'),
+                const SizedBox(
                   width: 50,
                 ),
                 Radio(
@@ -211,19 +208,17 @@ class _Patient_Edit extends State<Patient_Edit> {
                     });
                   }, // Make the radio button inactive
                 ),
-                Text('Female', style: TextStyle(color: Colors.black)),
+                const Text('Female'),
               ],
             ),
             addVerticalSpace(8),
             TextField(
               controller: Contact,
-              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.book_outlined, color: Colors.blue),
-                fillColor: COLOR_GREY,
+                labelText: "Contact",
                 filled: true,
                 hintText: 'Contact',
-                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -231,13 +226,11 @@ class _Patient_Edit extends State<Patient_Edit> {
             addVerticalSpace(8),
             TextField(
               controller: Address,
-              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.location_on, color: Colors.blue),
-                fillColor: COLOR_GREY,
+                labelText: "Address",
                 filled: true,
                 hintText: 'Address',
-                hintStyle: TextStyle(color: Colors.black),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -250,22 +243,20 @@ class _Patient_Edit extends State<Patient_Edit> {
             isActive: _activeStepIndex >= 1,
             title: const Text(
               'Health Information',
-              style: TextStyle(color: Colors.black),
             ),
             content: Column(
               children: [
+                addVerticalSpace(10),
                 TextField(
                   controller: HealthInsuranceInfo,
-                  style: TextStyle(color: Colors.black),
                   maxLines: 3,
                   autocorrect: true,
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.health_and_safety, color: Colors.blue),
-                    fillColor: COLOR_GREY,
+                    labelText: "Health Insurance Information",
                     filled: true,
                     hintText: 'Health Insurance Information',
-                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -273,14 +264,12 @@ class _Patient_Edit extends State<Patient_Edit> {
                 addVerticalSpace(8),
                 TextField(
                   controller: EmergencyContact,
-                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.contact_emergency, color: Colors.blue),
-                    fillColor: COLOR_GREY,
+                    labelText: "Emergency Contact",
                     filled: true,
                     hintText: 'Emergency Contact',
-                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -288,15 +277,13 @@ class _Patient_Edit extends State<Patient_Edit> {
                 addVerticalSpace(8),
                 TextField(
                   controller: MedicalHistory,
-                  style: TextStyle(color: Colors.black),
                   maxLines: 4,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.medical_information_outlined,
                         color: Colors.blue),
-                    fillColor: COLOR_GREY,
+                    labelText: "Medical History",
                     filled: true,
                     hintText: 'Medical History',
-                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -304,14 +291,12 @@ class _Patient_Edit extends State<Patient_Edit> {
                 addVerticalSpace(8),
                 TextField(
                   controller: Allergies_Medication,
-                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.medication, color: Colors.blue),
-                    fillColor: COLOR_GREY,
+                    labelText: "Allergies & Medication",
                     filled: true,
                     hintText: 'Allergies & Medication',
-                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -319,74 +304,18 @@ class _Patient_Edit extends State<Patient_Edit> {
                 addVerticalSpace(8),
                 TextField(
                   controller: Prefrence,
-                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.medical_services_outlined,
                         color: Colors.blue),
-                    fillColor: COLOR_GREY,
+                    labelText: "Preferred Healthcare",
                     filled: true,
                     hintText: 'Preferred Healthcare',
-                    hintStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ],
             )),
-        // Step(
-        //     state:
-        //         _activeStepIndex <= 2 ? StepState.editing : StepState.complete,
-        //     isActive: _activeStepIndex >= 2,
-        //     title: const Text(
-        //       'Account Setup',
-        //       style: TextStyle(color: Colors.black),
-        //     ),
-        //     content: Column(
-        //       children: [
-        //         Material(
-        //           color: Color.fromRGBO(236, 242, 255, 1.0),
-        //           child: Container(
-        //             decoration: const BoxDecoration(
-        //                 borderRadius: BorderRadius.all(Radius.circular(100))),
-        //             child: ListTile(
-        //               leading: Icon(
-        //                 Icons.fingerprint,
-        //                 color: Colors.blue,
-        //                 size: 30,
-        //               ),
-        //               title: Text(
-        //                 "Add Finger Print",
-        //                 style: TextStyle(color: Colors.black),
-        //               ),
-        //               onTap: () {},
-        //             ),
-        //           ),
-        //         ),
-        //         Container(
-        //           height: 20,
-        //         ),
-        //         Material(
-        //           color: Color.fromRGBO(236, 242, 255, 1.0),
-        //           child: Container(
-        //             decoration: const BoxDecoration(
-        //                 borderRadius: BorderRadius.all(Radius.circular(100))),
-        //             child: ListTile(
-        //               leading: Icon(
-        //                 Icons.face,
-        //                 color: Colors.blue,
-        //                 size: 30,
-        //               ),
-        //               title: Text(
-        //                 "Add Facial Authentication",
-        //                 style: TextStyle(color: Colors.black),
-        //               ),
-        //               onTap: () {},
-        //             ),
-        //           ),
-        //         ),
-        //         addVerticalSpace(10),
-        //       ],
-        //     ))
       ];
 
   @override
@@ -394,130 +323,183 @@ class _Patient_Edit extends State<Patient_Edit> {
     populateData(widget.pm);
   }
 
+  Future<bool?> _onBackPressed() async {
+    if (widget.accessedFrom == "Admin") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Admin_Manage(manage: 'Patients', user: widget.user)),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Manage_Patients(
+                  user: widget.user,
+                  docId: widget.docID,
+                )),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: MediaQuery.of(context).size.width,
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: Column(children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 45, left: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 0.0),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
-                          color: Colors.blue,
-                        ),
-                        child: Builder(builder: (context) {
-                          return IconButton(
-                            padding: EdgeInsets.all(0.0),
-                            iconSize: 30,
-                            icon: const Icon(
-                              Icons.arrow_left_outlined,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Admin_Manage(
-                                        manage: 'Patients', user: widget.user)),
-                              );
-                            },
-                          );
-                        }),
-                      ),
-                    ),
-                    addHorizontalSpace(30),
-                    Text(
-                      'Edit : ' + DisplayName,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700),
-                    )
-                  ]),
-                ],
-              ),
+    return WillPopScope(
+      onWillPop: () async {
+        bool? result = await _onBackPressed();
+        result ??= false;
+        return result;
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: MediaQuery.of(context).size.width,
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            Stepper(
-              type: StepperType.vertical,
-              physics: const PageScrollPhysics(),
-              currentStep: _activeStepIndex,
-              steps: stepList(),
-              onStepContinue: () {
-                if (_activeStepIndex < (stepList().length - 1)) {
-                  setState(() {
-                    _activeStepIndex += 1;
-                  });
-                } else {
-                  getData();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Admin_Manage(
-                            manage: 'Patients', user: widget.user)),
-                  );
-                  //print('Submited');
-                }
-              },
-              onStepCancel: () {
-                if (_activeStepIndex == 0) {
-                  return;
-                }
-                setState(() {
-                  _activeStepIndex -= 1;
-                });
-              },
-              onStepTapped: (int index) {
-                setState(() {
-                  _activeStepIndex = index;
-                });
-              },
-              controlsBuilder:
-                  (BuildContext context, ControlsDetails controls) {
-                final isLastStep = _activeStepIndex == stepList().length - 1;
-                return Row(
+            child: Column(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 45, left: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (_activeStepIndex > 0)
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: controls.onStepCancel,
-                          child: const Text('Back'),
+                    Row(children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 0.0),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Colors.blue,
+                          ),
+                          child: Builder(builder: (context) {
+                            return IconButton(
+                              padding: const EdgeInsets.all(0.0),
+                              iconSize: 30,
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                if (widget.accessedFrom == "Admin") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Admin_Manage(
+                                            manage: 'Patients',
+                                            user: widget.user)),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Manage_Patients(
+                                              user: widget.user,
+                                              docId: widget.docID,
+                                            )),
+                                  );
+                                }
+                              },
+                            );
+                          }),
                         ),
                       ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: controls.onStepContinue,
-                        child: (isLastStep)
-                            ? const Text('Update')
-                            : const Text('Next'),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                      addHorizontalSpace(30),
+                      Text(
+                        'Edit : $DisplayName',
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w700),
+                      )
+                    ]),
                   ],
-                );
-              },
-            ),
-          ]),
+                ),
+              ),
+              Stepper(
+                type: StepperType.vertical,
+                physics: const PageScrollPhysics(),
+                currentStep: _activeStepIndex,
+                steps: stepList(),
+                onStepContinue: () {
+                  if (_activeStepIndex < (stepList().length - 1)) {
+                    setState(() {
+                      _activeStepIndex += 1;
+                    });
+                  } else {
+                    getData();
+                    if (widget.accessedFrom == "Admin") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Admin_Manage(
+                                manage: 'Patients', user: widget.user)),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Manage_Patients(
+                                  user: widget.user,
+                                  docId: widget.docID,
+                                )),
+                      );
+                    }
+                    //print('Submited');
+                  }
+                },
+                onStepCancel: () {
+                  if (_activeStepIndex == 0) {
+                    return;
+                  }
+                  setState(() {
+                    _activeStepIndex -= 1;
+                  });
+                },
+                onStepTapped: (int index) {
+                  setState(() {
+                    _activeStepIndex = index;
+                  });
+                },
+                controlsBuilder:
+                    (BuildContext context, ControlsDetails controls) {
+                  final isLastStep = _activeStepIndex == stepList().length - 1;
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Row(
+                      children: [
+                        if (_activeStepIndex > 0)
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: controls.onStepCancel,
+                              child: const Text('Back'),
+                            ),
+                          ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: controls.onStepContinue,
+                            style: ElevatedButton.styleFrom(
+                                fixedSize: const Size(
+                                    double.infinity, double.infinity)),
+                            child: (isLastStep)
+                                ? const Text('Update')
+                                : const Text('Next'),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ]),
+          ),
         ),
       ),
     );

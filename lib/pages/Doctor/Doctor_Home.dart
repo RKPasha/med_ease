@@ -3,104 +3,38 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:med_ease/models/Appointments_Model.dart';
-import 'package:med_ease/pages/Patient/Manage_Info.dart';
-import 'package:med_ease/pages/Patient/patient_side_navbar.dart';
+import 'package:med_ease/pages/Doctor/Doctor_SignUp.dart';
+import 'package:med_ease/pages/Doctor/doctor_side_navbar.dart';
 import 'package:med_ease/services/remort_services.dart';
-import '../../models/Patient_Model.dart';
+import '../../models/Doctors_Model.dart';
+import '../../models/Report_Model.dart';
 import '../../utils/widgets_function.dart';
-import 'Appointments.dart';
-import 'Make_Appointment.dart';
-import 'Patient_Reports.dart';
-import 'Patient_Side_Menu.dart';
+import '../Patient/Patient_Side_Menu.dart';
+import 'Appnintment_Requests.dart';
+import 'Generate_Reports.dart';
+import 'Manage_Patients.dart';
+import 'Manage_Reports.dart';
+import 'View_Appointments.dart';
 
-class Patient_Home extends StatefulWidget {
+class Doctor_Home extends StatefulWidget {
   final User user;
-  const Patient_Home({super.key, required this.user});
+  const Doctor_Home({super.key, required this.user});
 
   @override
-  State<Patient_Home> createState() => _Patient_HomeState();
+  State<Doctor_Home> createState() => _Doctor_HomeState();
 }
 
-class _Patient_HomeState extends State<Patient_Home> {
-  List<Patient_Model>? all_patients;
-  List<Patient_Model>? patient;
+class _Doctor_HomeState extends State<Doctor_Home> {
+  List<Doctor_Model>? all_doctors;
+  List<Doctor_Model>? docs;
   List<Appointments_Model>? appointments;
+  List<Appointments_Model>? approvedappointments;
+  List<Report_Model>? reports;
   String id = '';
   String contact = '';
   int total_appointments = 0;
   bool loaded = false;
-
-  getData() async {
-    all_patients = await remort_services().getPatients();
-    appointments = await remort_services().getAppointments();
-    SearchResults();
-  }
-
-  SearchResults() {
-    final Suggestions = all_patients!.where((patient) {
-      final email = patient.Email;
-      return email.contains(widget.user.email.toString());
-    }).toList();
-    setState(() {
-      patient = Suggestions;
-      if (patient![0].Contact != "Not Yet Added") {
-        Populate(patient);
-        total_appointments = appointments!.length;
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Manage_Info(
-                    user: widget.user,
-                    ID: id,
-                    pm: Data(patient),
-                  )),
-        );
-      }
-    });
-  }
-
-  Populate(List<Patient_Model>? patient) {
-    id = patient![0].id;
-    First_Name = patient[0].First_Name;
-    Last_Name = patient[0].Last_Name;
-    DOB = patient[0].DOB;
-    Gender = patient[0].Gender;
-    Contact = patient[0].Contact;
-    Address = patient[0].Address;
-    HealthInsuranceID = patient[0].HealthInsuranceID;
-    EmergencyContact = patient[0].EmergencyContact;
-    MedicalHistory = patient[0].MedicalHistory;
-    Allergies_Medication = patient[0].Allergies_Medication;
-    Prefrence = patient[0].Prefrence;
-    Email = patient[0].Email;
-    Information = patient[0].Information;
-    contact = patient[0].Contact;
-    setState(() {
-      loaded = true;
-    });
-  }
-
-  Data(List<Patient_Model>? patient) {
-    Patient_Model pm = Patient_Model(
-        id: patient![0].id,
-        First_Name: patient[0].First_Name,
-        Last_Name: patient[0].Last_Name,
-        DOB: patient[0].DOB,
-        Gender: patient[0].Gender,
-        Contact: patient[0].Contact,
-        Address: patient[0].Address,
-        HealthInsuranceID: patient[0].HealthInsuranceID,
-        EmergencyContact: patient[0].EmergencyContact,
-        MedicalHistory: patient[0].MedicalHistory,
-        Allergies_Medication: patient[0].Allergies_Medication,
-        Prefrence: patient[0].Prefrence,
-        Email: patient[0].Email,
-        Information: patient[0].Information,
-        Password: Password,
-        isDeleted: 0);
-    return pm;
-  }
+  int total_reports = 0;
 
   loading() {
     return Container(
@@ -109,26 +43,195 @@ class _Patient_HomeState extends State<Patient_Home> {
     );
   }
 
+  getData() async {
+    all_doctors = await remort_services().getDoctors();
+    SearchResults();
+  }
+
+  TotalAppointments() async {
+    int counter = 0;
+    appointments = await remort_services().getAllAppointments_byDoctor(id);
+    approvedappointments =
+        await remort_services().getApprovedAppointments_byDoctor(id);
+    if (appointments != null) {
+      for (int i = 0; i < appointments!.length; i++) {
+        if (appointments![i].isapproved == 0) {
+          counter = counter + 1;
+        }
+      }
+      setState(() {
+        total_appointments = counter;
+      });
+    } else {
+      setState(() {
+        total_appointments = 0;
+      });
+    }
+  }
+
+  TotalReports() async {
+    int counter = 0;
+    reports = await remort_services().getAllReports_byDoctor(id);
+    if (reports != null) {
+      for (int i = 0; i < reports!.length; i++) {
+        counter = counter + 1;
+      }
+      setState(() {
+        total_reports = counter;
+      });
+    } else {
+      setState(() {
+        total_reports = 0;
+      });
+    }
+  }
+
+  notification() {
+    if (total_appointments != 0) {
+      return IconButton(
+          onPressed: () {},
+          icon: Stack(
+            children: const <Widget>[
+              Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
+              Positioned(
+                  left: 15.0,
+                  child: Icon(
+                    Icons.brightness_1,
+                    color: Colors.red,
+                    size: 9.0,
+                  ))
+            ],
+          ));
+    } else {
+      return const Icon(
+        Icons.notifications,
+        color: Colors.white,
+      );
+    }
+  }
+
+  SearchResults() {
+    final Suggestions = all_doctors!.where((doc) {
+      final email = doc.Email;
+      return email.contains(widget.user.email.toString());
+    }).toList();
+    setState(() {
+      docs = Suggestions;
+      if (CheckData()) {
+        Populate(docs);
+        TotalAppointments();
+        TotalReports();
+        setState(() {
+          loaded = true;
+        });
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Doctor_SignUp(
+                    user: widget.user,
+                    dm: Doctor_Model(
+                        id: docs![0].id,
+                        First_Name: docs![0].First_Name,
+                        Certification: docs![0].Certification,
+                        Gender: docs![0].Gender,
+                        Last_Name: docs![0].Last_Name,
+                        Experience: docs![0].Experience,
+                        Experties: docs![0].Experties,
+                        Contact: docs![0].Contact,
+                        InsuranceID: docs![0].InsuranceID,
+                        LiabilityID: docs![0].LiabilityID,
+                        LicenseNo: docs![0].LicenseNo,
+                        Publication: docs![0].Publication,
+                        Specialist: docs![0].Specialist,
+                        Email: docs![0].Email,
+                        isDeleted: 0,
+                        Clinic: docs![0].Clinic,
+                        Degree: docs![0].Degree,
+                        EducationTrainingID: docs![0].EducationTrainingID),
+                  )),
+        );
+      }
+    });
+  }
+
+  bool CheckData() {
+    if (docs![0].Certification == 'Not Yet Added') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Populate(List<Doctor_Model>? doc) {
+    id = doc![0].id;
+    Certification = doc[0].Certification;
+    EducationTrainingID = doc[0].EducationTrainingID;
+    Gender = doc[0].Gender;
+    Degree = doc[0].Degree;
+    Clinic = doc[0].Clinic;
+    First_Name = doc[0].First_Name;
+    Last_Name = doc[0].Last_Name;
+    Experience = doc[0].Experience;
+    Experties = doc[0].Experties;
+    Contact = doc[0].Contact;
+    InsuranceID = doc[0].InsuranceID;
+    LiabilityID = doc[0].LiabilityID;
+    LicenseNo = doc[0].LicenseNo;
+    Publication = doc[0].Publication;
+    Specialist = doc[0].Specialist;
+    Email = doc[0].Email;
+  }
+
+  Data(List<Doctor_Model>? doc) {
+    Doctor_Model dm = Doctor_Model(
+      id: id,
+      Certification: doc![0].Certification,
+      EducationTrainingID: doc[0].EducationTrainingID,
+      Gender: doc[0].Gender,
+      Degree: doc[0].Degree,
+      Clinic: doc[0].Clinic,
+      First_Name: doc[0].First_Name,
+      Last_Name: doc[0].Last_Name,
+      Experience: doc[0].Experience,
+      Experties: doc[0].Experties,
+      Contact: doc[0].Contact,
+      InsuranceID: doc[0].InsuranceID,
+      LiabilityID: doc[0].LiabilityID,
+      LicenseNo: doc[0].LicenseNo,
+      Publication: doc[0].Publication,
+      Specialist: doc[0].Specialist,
+      Email: doc[0].Email,
+      isDeleted: 0,
+    );
+    return dm;
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     getData();
   }
 
-  String First_Name = '';
-  String Last_Name = '';
-  String DOB = '';
-  String Gender = '';
-  String Contact = '';
-  String Address = '';
-  String HealthInsuranceID = '';
-  String EmergencyContact = '';
-  String MedicalHistory = '';
-  String Allergies_Medication = '';
-  String Prefrence = '';
-  String Email = '';
-  String Password = '';
-  String Information = '';
+  String Certification = "";
+  int EducationTrainingID = 0;
+  String Gender = "";
+  String Degree = "";
+  String Clinic = "";
+  String First_Name = "";
+  String Last_Name = "";
+  int Experience = 0;
+  String Experties = "";
+  String Contact = "";
+  int InsuranceID = 0;
+  int LiabilityID = 0;
+  String LicenseNo = "";
+  String Publication = "";
+  String Specialist = "";
+  String Email = "";
+  int isDeleted = 0;
 
   Future<bool?> _onBackPressed() async {
     return showDialog(
@@ -184,11 +287,12 @@ class _Patient_HomeState extends State<Patient_Home> {
               return result;
             },
             child: Scaffold(
-              drawer: PatientSideNav(
+              drawer: DoctorSideNav(
+                name: '$First_Name $Last_Name',
                 user: widget.user,
                 id: id,
-                pm: Data(patient),
-                name: '$First_Name $Last_Name',
+                approvedappointments: approvedappointments,
+                docs: docs,
               ),
               body: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -233,12 +337,22 @@ class _Patient_HomeState extends State<Patient_Home> {
                         ],
                       ),
                       addVerticalSpace(20),
-                      Text(
-                        "$greeting $First_Name",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '$greeting $First_Name',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
                       Container(
                         height: 20,
@@ -250,14 +364,38 @@ class _Patient_HomeState extends State<Patient_Home> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Appointments(
-                                            user: widget.user,
-                                            patient_ID: id,
-                                          )),
-                                );
+                                if (approvedappointments!.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Generate_Reports(
+                                              user: widget.user,
+                                              docId: id,
+                                              accessedFrom: 'Doctor',
+                                            )),
+                                  );
+                                } else {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Operation Denied'),
+                                      content: const Text('No Record Found!'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Ok'),
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                               },
                               child: Container(
                                 height: 100,
@@ -277,7 +415,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                                               MainAxisAlignment.spaceBetween,
                                           children: const <Widget>[
                                             Text(
-                                              "View\nAppointments",
+                                              "Generate\nReport",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
@@ -290,7 +428,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                                                       Colors.white54,
                                                   radius: 18,
                                                   child: Icon(
-                                                    Icons.read_more,
+                                                    Icons.report_gmailerrorred,
                                                     color: Colors.white,
                                                   )),
                                             )
@@ -302,17 +440,22 @@ class _Patient_HomeState extends State<Patient_Home> {
                                               MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
                                             const Text(
-                                              "Appointments",
+                                              "Reports",
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14),
                                             ),
-                                            Text(
-                                              total_appointments.toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 12.0),
+                                              child: Text(
+                                                total_reports.toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
                                           ],
                                         )
@@ -322,15 +465,37 @@ class _Patient_HomeState extends State<Patient_Home> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Manage_Info(
-                                            user: widget.user,
-                                            pm: Data(patient),
-                                            ID: id,
-                                          )),
-                                );
+                                if (approvedappointments!.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Manage_Patients(
+                                              user: widget.user,
+                                              docId: id,
+                                            )),
+                                  );
+                                } else {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Operation Denied'),
+                                      content: const Text('No Record Found!'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Ok'),
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                               },
                               child: Container(
                                 height: 100,
@@ -350,7 +515,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                                               MainAxisAlignment.spaceBetween,
                                           children: const <Widget>[
                                             Text(
-                                              "Mange Your\nInformation",
+                                              "Mange Your\nPatients",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
@@ -363,7 +528,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                                                       Colors.white54,
                                                   radius: 18,
                                                   child: Icon(
-                                                    Icons.edit,
+                                                    Icons.manage_accounts,
                                                     color: Colors.white,
                                                   )),
                                             )
@@ -387,16 +552,38 @@ class _Patient_HomeState extends State<Patient_Home> {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Make_Appointment(
-                                            user: widget.user,
-                                            appointment: 'New',
-                                            patient_ID: id,
-                                            appointment_ID: '',
-                                          )),
-                                );
+                                if (total_appointments != 0) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Appointment_Request(
+                                              user: widget.user,
+                                              doc_ID: id,
+                                            )),
+                                  );
+                                } else {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Operation Denied'),
+                                      content: const Text('No Requests Found!'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Ok'),
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                               },
                               child: Container(
                                 width: width * 0.87,
@@ -413,28 +600,26 @@ class _Patient_HomeState extends State<Patient_Home> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(
-                                              Icons.calendar_month_outlined,
-                                              color: Colors.white,
-                                              size: 25,
+                                            const CircleAvatar(
+                                              backgroundColor: Colors.white54,
+                                              radius: 18,
+                                              child: Icon(
+                                                Icons.calendar_month_outlined,
+                                                color: Colors.white,
+                                                size: 25,
+                                              ),
                                             ),
                                             addHorizontalSpace(10),
                                             const Text(
-                                              "Make Appointments With Doctor.",
+                                              "View Appointment Requests",
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
                                           ],
                                         ),
                                         Row(
-                                          children: const [
-                                            CircleAvatar(
-                                                backgroundColor: Colors.white54,
-                                                radius: 18,
-                                                child: Icon(
-                                                  Icons.notifications,
-                                                  color: Colors.white,
-                                                )),
+                                          children: [
+                                            notification(),
                                           ],
                                         ),
                                       ],
@@ -444,9 +629,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                           ],
                         ),
                       ),
-                      Container(
-                        height: 20,
-                      ),
+                      addVerticalSpace(20),
                       Padding(
                         padding: const EdgeInsets.only(right: 0),
                         child: Row(
@@ -457,9 +640,73 @@ class _Patient_HomeState extends State<Patient_Home> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Patient_Reports(
+                                      builder: (context) => View_Appointments(
+                                          user: widget.user, doc_ID: id)),
+                                );
+                              },
+                              child: Container(
+                                width: width * 0.87,
+                                padding: const EdgeInsets.only(right: 0),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.blue),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const CircleAvatar(
+                                              backgroundColor: Colors.white54,
+                                              radius: 18,
+                                              child: Icon(
+                                                Icons
+                                                    .settings_applications_outlined,
+                                                color: Colors.white,
+                                                size: 25,
+                                              ),
+                                            ),
+                                            addHorizontalSpace(10),
+                                            const Text(
+                                              "Manage Appointments",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.edit_calendar_outlined,
+                                              color: Colors.white,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      addVerticalSpace(20),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Manage_Reports(
                                             user: widget.user,
-                                            patientId: id,
+                                            docId: id,
+                                            accessedFrom: 'Doctor',
                                           )),
                                 );
                               },
@@ -478,14 +725,18 @@ class _Patient_HomeState extends State<Patient_Home> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(
-                                              Icons.medical_information,
-                                              color: Colors.white,
-                                              size: 25,
+                                            const CircleAvatar(
+                                              backgroundColor: Colors.white54,
+                                              radius: 18,
+                                              child: Icon(
+                                                Icons.report_gmailerrorred,
+                                                color: Colors.white,
+                                                size: 25,
+                                              ),
                                             ),
                                             addHorizontalSpace(10),
                                             const Text(
-                                              "View Your Medical Reports",
+                                              "Manage Reports",
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
@@ -493,13 +744,10 @@ class _Patient_HomeState extends State<Patient_Home> {
                                         ),
                                         Row(
                                           children: const [
-                                            CircleAvatar(
-                                                backgroundColor: Colors.white54,
-                                                radius: 18,
-                                                child: Icon(
-                                                  Icons.edit_document,
-                                                  color: Colors.white,
-                                                )),
+                                            Icon(
+                                              Icons.manage_history,
+                                              color: Colors.white,
+                                            ),
                                           ],
                                         ),
                                       ],
@@ -533,7 +781,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             color: Colors.blue),
                         child: Padding(
                             padding: const EdgeInsets.all(15.0),
-                            child: Patient_Details(width)),
+                            child: Doctor_Details(width)),
                       ),
                     ],
                   ),
@@ -543,7 +791,7 @@ class _Patient_HomeState extends State<Patient_Home> {
           );
   }
 
-  SingleChildScrollView Patient_Details(double width) {
+  SingleChildScrollView Doctor_Details(double width) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
@@ -585,6 +833,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 '$First_Name $Last_Name',
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -592,59 +841,6 @@ class _Patient_HomeState extends State<Patient_Home> {
                                           '$First_Name $Last_Name')
                                       .then((value) => ScaffoldMessenger.of(
                                               context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Date Of Birth",
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DOB,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(DOB).then((value) =>
-                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   'Text Copped to Clipboard!'))));
@@ -693,10 +889,11 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Gender,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(DOB).then((value) =>
+                                  FlutterClipboard.copy(Gender).then((value) =>
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
@@ -746,6 +943,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Contact,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -774,7 +972,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "Address",
+                        "Email",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -798,11 +996,12 @@ class _Patient_HomeState extends State<Patient_Home> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                Address,
+                                Email,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(Address).then((value) =>
+                                  FlutterClipboard.copy(Email).then((value) =>
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
@@ -827,7 +1026,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "Health Insurance ID",
+                        "Degree",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -851,12 +1050,13 @@ class _Patient_HomeState extends State<Patient_Home> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                HealthInsuranceID,
+                                Degree,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(HealthInsuranceID).then(
-                                      (value) => ScaffoldMessenger.of(context)
+                                  FlutterClipboard.copy(Degree).then((value) =>
+                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   'Text Copped to Clipboard!'))));
@@ -880,7 +1080,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "Emergency Contact",
+                        "Clinic",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -904,12 +1104,13 @@ class _Patient_HomeState extends State<Patient_Home> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                EmergencyContact,
+                                Clinic,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(EmergencyContact).then(
-                                      (value) => ScaffoldMessenger.of(context)
+                                  FlutterClipboard.copy(Clinic).then((value) =>
+                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   'Text Copped to Clipboard!'))));
@@ -933,60 +1134,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "Medical History",
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        width: width * 0.8,
-                        height: 80,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                MedicalHistory,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  FlutterClipboard.copy(MedicalHistory).then(
-                                      (value) => ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Text Copped to Clipboard!'))));
-                                },
-                                child: const Icon(
-                                  Icons.copy_outlined,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                addVerticalSpace(20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Allergies and Medications",
+                        "Experience",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -1010,11 +1158,12 @@ class _Patient_HomeState extends State<Patient_Home> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                Allergies_Medication,
+                                Experience.toString(),
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(Allergies_Medication)
+                                  FlutterClipboard.copy(Experience.toString())
                                       .then((value) => ScaffoldMessenger.of(
                                               context)
                                           .showSnackBar(const SnackBar(
@@ -1040,7 +1189,61 @@ class _Patient_HomeState extends State<Patient_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "Preffered Health Care",
+                        "Experties",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                Experties,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(Experties).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Specialist",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -1064,11 +1267,340 @@ class _Patient_HomeState extends State<Patient_Home> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                Prefrence,
+                                Specialist,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  FlutterClipboard.copy(Prefrence).then(
+                                  FlutterClipboard.copy(Specialist).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Certification",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                Certification,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(Certification).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "EducationTrainingID",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                EducationTrainingID.toString(),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(
+                                          EducationTrainingID.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Publication",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                Publication,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(Publication).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "InsuranceID",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                InsuranceID.toString(),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(InsuranceID.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "LiabilityID",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                LiabilityID.toString(),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(LiabilityID.toString())
+                                      .then((value) => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Text Copped to Clipboard!'))));
+                                },
+                                child: const Icon(
+                                  Icons.copy_outlined,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                addVerticalSpace(20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "LicenseNo",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: width * 0.8,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                LicenseNo,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FlutterClipboard.copy(LicenseNo).then(
                                       (value) => ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
