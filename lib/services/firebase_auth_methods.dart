@@ -40,6 +40,8 @@ class FirebaseAuthMethods {
     required BuildContext context,
   }) async {
     String tempId = '123';
+    String? savedEmail = await _storage.read(key: 'tempEmail');
+    String? savedPassword = await _storage.read(key: 'tempPassword');
     // "C:\Users\zain\OneDrive\Desktop\Flutter\medease-1f1df-firebase-adminsdk-za2vw-77783a3e28.json"
     try {
       await _auth
@@ -47,9 +49,10 @@ class FirebaseAuthMethods {
         email: email,
         password: password,
       )
-          .then((value) {
+          .then((value) async {
+        await sendEmailVerification(context);
         tempId = value.user!.uid;
-        FirebaseFirestore.instance
+        await FirebaseFirestore.instance
             .collection('users')
             .doc(value.user!.uid)
             .set({
@@ -73,23 +76,14 @@ class FirebaseAuthMethods {
           'isDeleted': 0,
           'gender': 'Not Yet Added'
         });
+        if (context.mounted) {}
+        await loginWithEmail(
+          email: savedEmail!,
+          password: savedPassword!,
+          context: context,
+        );
       });
-      if (context.mounted) {
-        await sendEmailVerification(context);
-      }
-      if (tempId != '123') {
-        String? savedEmail = await _storage.read(key: 'tempEmail');
-        String? savedPassword = await _storage.read(key: 'tempPassword');
-        print(savedEmail);
-        print(savedPassword);
-        if (context.mounted) {
-          loginWithEmail(
-            email: savedEmail!,
-            password: savedPassword!,
-            context: context,
-          );
-        }
-      }
+
       return tempId;
     } on FirebaseAuthException catch (e) {
       // if you want to display your own custom error message
@@ -111,21 +105,24 @@ class FirebaseAuthMethods {
     required String role,
     required BuildContext context,
   }) async {
-    late String tempId;
+    String tempId = '123';
+    String? savedEmail = await _storage.read(key: 'tempEmail');
+    String? savedPassword = await _storage.read(key: 'tempPassword');
     // "C:\Users\zain\OneDrive\Desktop\Flutter\medease-1f1df-firebase-adminsdk-za2vw-77783a3e28.json"
     try {
-      final UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      tempId = userCredential.user!.uid;
-      if (tempId.isNotEmpty) {
+      await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) async {
+        await sendEmailVerification(context);
+        tempId = value.user!.uid;
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userCredential.user!.uid)
+            .doc(value.user!.uid)
             .set({
-          'uid': userCredential.user!.uid,
+          'uid': value.user!.uid,
           'role': role.toLowerCase(),
           'createdOn': DateFormat.yMMMMd()
-              .format(userCredential.user!.metadata.creationTime!)
+              .format(value.user!.metadata.creationTime!)
               .toString(),
           'certification': "Not Yet Added",
           "educationTrainingID": 0,
@@ -142,22 +139,16 @@ class FirebaseAuthMethods {
           "LicenseNo": "0",
           "publication": "Not Yet Added",
           "specialist": "Not Yet Added",
-          "email": userCredential.user!.email,
+          "email": value.user!.email,
           "isDeleted": 0
         });
-        if (context.mounted) {
-          await sendEmailVerification(context);
-        }
-        String? savedEmail = await _storage.read(key: 'tempEmail');
-        String? savedPassword = await _storage.read(key: 'tempPassword');
-        if (context.mounted) {
-          loginWithEmail(
-            email: savedEmail!,
-            password: savedPassword!,
-            context: context,
-          );
-        }
-      }
+        if (context.mounted) {}
+        await loginWithEmail(
+          email: savedEmail!,
+          password: savedPassword!,
+          context: context,
+        );
+      });
 
       return tempId;
     } on FirebaseAuthException catch (e) {

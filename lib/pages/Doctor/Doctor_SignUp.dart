@@ -638,21 +638,19 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                               ),
                             ),
                             addHorizontalSpace(30),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: FittedBox(
-                                    child: Text(
-                                      'Edit :  ${widget.dm.First_Name}  ${widget.dm.Last_Name}',
-                                      style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700),
-                                      softWrap: false,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                (widget.dm.First_Name.length +
+                                            widget.dm.Last_Name.length <=
+                                        15)
+                                    ? 'Edit: ${widget.dm.First_Name} ${widget.dm.Last_Name}'
+                                    : 'Edit: ${widget.dm.First_Name}\n${widget.dm.Last_Name}',
+                                style: const TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.w700),
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             )
                           ]),
                         ],

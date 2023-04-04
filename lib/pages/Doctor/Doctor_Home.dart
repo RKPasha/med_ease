@@ -344,7 +344,9 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '$greeting $First_Name',
+                                (First_Name.length < 10)
+                                    ? '$greeting $First_Name'
+                                    : '$greeting\n$First_Name',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -362,181 +364,187 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (approvedappointments!.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Generate_Reports(
-                                              user: widget.user,
-                                              docId: id,
-                                              accessedFrom: 'Doctor',
-                                            )),
-                                  );
-                                } else {
-                                  showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                      title: const Text('Operation Denied'),
-                                      content: const Text('No Record Found!'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Cancel'),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Ok'),
-                                          child: const Text('Ok'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Container(
-                                height: 100,
-                                width: width * 0.42,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.blue),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: const <Widget>[
-                                            Text(
-                                              "Generate\nReport",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                  fontSize: 14),
-                                            ),
-                                            Material(
-                                              color: Colors.transparent,
-                                              child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Colors.white54,
-                                                  radius: 18,
-                                                  child: Icon(
-                                                    Icons.report_gmailerrorred,
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (approvedappointments!.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Generate_Reports(
+                                                user: widget.user,
+                                                docId: id,
+                                                accessedFrom: 'Doctor',
+                                              )),
+                                    );
+                                  } else {
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Operation Denied'),
+                                        content: const Text('No Record Found!'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Cancel'),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'Ok'),
+                                            child: const Text('Ok'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  height: 100,
+                                  width: width * 0.42,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.blue),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: const <Widget>[
+                                              Text(
+                                                "Generate\nReport",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
                                                     color: Colors.white,
-                                                  )),
-                                            )
-                                          ],
-                                        ),
-                                        //addVerticalSpace(15),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            const Text(
-                                              "Reports",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 12.0),
-                                              child: Text(
-                                                total_reports.toString(),
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                                    fontSize: 14),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )),
+                                              Material(
+                                                color: Colors.transparent,
+                                                child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.white54,
+                                                    radius: 18,
+                                                    child: Icon(
+                                                      Icons
+                                                          .report_gmailerrorred,
+                                                      color: Colors.white,
+                                                    )),
+                                              )
+                                            ],
+                                          ),
+                                          //addVerticalSpace(15),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              const Text(
+                                                "Reports",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 12.0),
+                                                child: Text(
+                                                  total_reports.toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )),
+                                ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                if (approvedappointments!.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Manage_Patients(
-                                              user: widget.user,
-                                              docId: id,
-                                            )),
-                                  );
-                                } else {
-                                  showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                      title: const Text('Operation Denied'),
-                                      content: const Text('No Record Found!'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Cancel'),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Ok'),
-                                          child: const Text('Ok'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Container(
-                                height: 100,
-                                width: width * 0.42,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.blue),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: const <Widget>[
-                                            Text(
-                                              "Mange Your\nPatients",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                  fontSize: 16),
-                                            ),
-                                            Material(
-                                              color: Colors.transparent,
-                                              child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Colors.white54,
-                                                  radius: 18,
-                                                  child: Icon(
-                                                    Icons.manage_accounts,
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (approvedappointments!.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Manage_Patients(
+                                                user: widget.user,
+                                                docId: id,
+                                              )),
+                                    );
+                                  } else {
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Operation Denied'),
+                                        content: const Text('No Record Found!'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Cancel'),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'Ok'),
+                                            child: const Text('Ok'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  height: 100,
+                                  width: width * 0.42,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.blue),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: const <Widget>[
+                                              Text(
+                                                "Mange Your\nPatients",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
                                                     color: Colors.white,
-                                                  )),
-                                            )
-                                          ],
-                                        ),
-                                        //addVerticalSpace(15),
-                                      ],
-                                    )),
+                                                    fontSize: 16),
+                                              ),
+                                              Material(
+                                                color: Colors.transparent,
+                                                child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.white54,
+                                                    radius: 18,
+                                                    child: Icon(
+                                                      Icons.manage_accounts,
+                                                      color: Colors.white,
+                                                    )),
+                                              )
+                                            ],
+                                          ),
+                                          //addVerticalSpace(15),
+                                        ],
+                                      )),
+                                ),
                               ),
                             )
                           ],
