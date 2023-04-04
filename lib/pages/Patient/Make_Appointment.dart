@@ -108,7 +108,8 @@ class _Make_Appointment extends State<Make_Appointment> {
     setState(() {
       for (int i = 0; i < allData!.length; i++) {
         if (!Clinics.contains(allData![i].Clinic) &&
-            allData![i].Clinic != "Not Yet Added") {
+            allData![i].Clinic != "Not Yet Added" &&
+            allData![i].isDeleted == 0) {
           Clinics.add(allData![i].Clinic);
         }
       }
@@ -180,8 +181,8 @@ class _Make_Appointment extends State<Make_Appointment> {
   updateData() {
     if (_dropDownValue != '' &&
         _dropDownValue1 != '' &&
-        DateInput != '' &&
-        TimeInput != '') {
+        DateInput.text != '' &&
+        TimeInput.text != '') {
       try {
         Appointments_Model am = Appointments_Model(
             id: '',
@@ -274,6 +275,8 @@ class _Make_Appointment extends State<Make_Appointment> {
   }
 
   SingleChildScrollView New_Appointment(BuildContext context) {
+    TimeOfDay? pickedTime;
+    DateTime? checkPickedDate;
     return SingleChildScrollView(
       //physics: const NeverScrollableScrollPhysics(),
       child: Padding(
@@ -331,25 +334,24 @@ class _Make_Appointment extends State<Make_Appointment> {
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
-                                  firstDate: DateTime(
-                                      2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101));
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(DateTime.now().year + 1));
 
                               if (pickedDate != null) {
-                                print(
-                                    pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                                 String formattedDate =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                                print(
-                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                //you can implement different kind of Date Format here according to your requirement
 
                                 setState(() {
                                   DateInput.text =
                                       formattedDate; //set output date to TextField value.
                                 });
                               } else {
-                                print("Date is not selected");
+                                if (mounted) {}
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Date not Selected'),
+                                  ),
+                                );
                               }
                             },
                           )
@@ -362,17 +364,69 @@ class _Make_Appointment extends State<Make_Appointment> {
                           TextField(
                             controller: TimeInput,
                             onTap: () async {
-                              TimeOfDay? pickedTime = await showTimePicker(
+                              pickedTime = await showTimePicker(
                                 initialTime: TimeOfDay.now(),
                                 context: context,
                               );
                               if (pickedTime != null) {
-                                setState(() {
-                                  TimeInput.text = pickedTime.format(
-                                      context); //set the value of text field.
-                                });
+                                if (pickedTime!.hour >= 8 &&
+                                    pickedTime!.hour <= 21) {
+                                  checkPickedDate =
+                                      DateTime.parse(DateInput.text);
+                                  bool dateCheck = (checkPickedDate!.day ==
+                                          DateTime.now().day &&
+                                      checkPickedDate!.month ==
+                                          DateTime.now().month &&
+                                      checkPickedDate!.year ==
+                                          DateTime.now().year);
+                                  bool timeCheck = (pickedTime!.hour <=
+                                          TimeOfDay.now().hour &&
+                                      pickedTime!.minute <=
+                                          TimeOfDay.now().minute);
+                                  if (dateCheck && timeCheck) {
+                                    if (mounted) {}
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Invalid Time Selected'),
+                                      ),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      TimeInput.text = pickedTime!.format(
+                                          context); //set the value of text field.
+                                    });
+                                  }
+                                } else {
+                                  if (mounted) {}
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Error'),
+                                      content: const Text(
+                                          'Clinic is not open at this time! Make appointment between 08:00 AM - 10:00 PM'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'OK'),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                               } else {
-                                print("Time is not selected");
+                                if (mounted) {}
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Time not Selected'),
+                                  ),
+                                );
                               }
                             },
                             readOnly: true,
@@ -557,6 +611,8 @@ class _Make_Appointment extends State<Make_Appointment> {
   }
 
   SingleChildScrollView Update_Appointment(BuildContext context) {
+    TimeOfDay? pickedTime;
+    DateTime? checkPickedDate;
     return SingleChildScrollView(
       //physics: const NeverScrollableScrollPhysics(),
       child: Padding(
@@ -614,25 +670,24 @@ class _Make_Appointment extends State<Make_Appointment> {
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
-                                  firstDate: DateTime(
-                                      2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101));
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(DateTime.now().year + 1));
 
                               if (pickedDate != null) {
-                                print(
-                                    pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                                 String formattedDate =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                                print(
-                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                //you can implement different kind of Date Format here according to your requirement
 
                                 setState(() {
                                   DateInput.text =
                                       formattedDate; //set output date to TextField value.
                                 });
                               } else {
-                                print("Date is not selected");
+                                if (mounted) {}
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Date not Selected'),
+                                  ),
+                                );
                               }
                             },
                           )
@@ -645,15 +700,62 @@ class _Make_Appointment extends State<Make_Appointment> {
                           TextField(
                             controller: TimeInput,
                             onTap: () async {
-                              TimeOfDay? pickedTime = await showTimePicker(
+                              pickedTime = await showTimePicker(
                                 initialTime: TimeOfDay.now(),
                                 context: context,
                               );
                               if (pickedTime != null) {
-                                setState(() {
-                                  TimeInput.text = pickedTime.format(
-                                      context); //set the value of text field.
-                                });
+                                if (pickedTime!.hour >= 8 &&
+                                    pickedTime!.hour <= 22) {
+                                  checkPickedDate =
+                                      DateTime.parse(DateInput.text);
+                                  bool dateCheck = (checkPickedDate!.day ==
+                                          DateTime.now().day &&
+                                      checkPickedDate!.month ==
+                                          DateTime.now().month &&
+                                      checkPickedDate!.year ==
+                                          DateTime.now().year);
+                                  bool timeCheck = (pickedTime!.hour <=
+                                          TimeOfDay.now().hour &&
+                                      pickedTime!.minute <=
+                                          TimeOfDay.now().minute);
+                                  if (dateCheck && timeCheck) {
+                                    if (mounted) {}
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Invalid Time Selected'),
+                                      ),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      TimeInput.text = pickedTime!.format(
+                                          context); //set the value of text field.
+                                    });
+                                  }
+                                } else {
+                                  if (mounted) {}
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Error'),
+                                      content: const Text(
+                                          'Clinic is not open at this time! Make appointment between 08:00 AM - 10:00 PM'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'OK'),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                               } else {
                                 print("Time is not selected");
                               }

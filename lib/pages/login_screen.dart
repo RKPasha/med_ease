@@ -141,13 +141,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       onTap: () {
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          const CustomSnackBar.info(
-                            message:
-                                'Info: Login button will appear when you enter a valid Email',
-                          ),
-                        );
+                        isEmailCorrect
+                            ? {}
+                            : showTopSnackBar(
+                                Overlay.of(context),
+                                const CustomSnackBar.info(
+                                  message:
+                                      'Info: Login button will appear when you enter a valid Email',
+                                ),
+                              );
                       },
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.email),

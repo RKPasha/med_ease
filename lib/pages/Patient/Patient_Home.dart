@@ -234,11 +234,15 @@ class _Patient_HomeState extends State<Patient_Home> {
                         ],
                       ),
                       addVerticalSpace(20),
-                      Text(
-                        "$greeting $First_Name",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                      Center(
+                        child: Text(
+                          First_Name.length > 10
+                              ? "$greeting\n$First_Name"
+                              : "$greeting $First_Name",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Container(
