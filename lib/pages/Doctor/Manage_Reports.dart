@@ -365,7 +365,7 @@ class _Manage_ReportsState extends State<Manage_Reports> {
                                     border: Border.all(color: Colors.white),
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(5)),
-                                width: 320,
+                                width: 180,
                                 padding: const EdgeInsets.all(8),
                                 child: RichText(
                                   //remove const when integrating DB

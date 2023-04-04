@@ -406,7 +406,10 @@ class _Make_Appointment extends State<Make_Appointment> {
                                 style: const TextStyle(fontSize: 16),
                                 items: Clinics.map((val) => DropdownMenuItem(
                                       value: val,
-                                      child: Text(val),
+                                      child: Text(
+                                        val,
+                                        style: TextStyle(color: Colors.black),
+                                      ),
                                     )).toList(),
                                 onChanged: (val) {
                                   setState(
@@ -447,7 +450,10 @@ class _Make_Appointment extends State<Make_Appointment> {
                                   (val) {
                                     return DropdownMenuItem<String>(
                                       value: val,
-                                      child: Text(val),
+                                      child: Text(
+                                        val,
+                                        style: TextStyle(color: Colors.black),
+                                      ),
                                     );
                                   },
                                 ).toList(),

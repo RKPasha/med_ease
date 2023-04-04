@@ -323,11 +323,11 @@ class _Patient_ReportsState extends State<Patient_Reports> {
                           Row(
                             children: const [
                               Icon(
-                                Icons.touch_app_outlined,
+                                Icons.download,
                                 color: Colors.white,
                               ),
                               Text(
-                                "Tap on Card to get full details.",
+                                "Tap on Get PDF and wait for few seconds.",
                                 style: TextStyle(color: Colors.white),
                               )
                             ],
@@ -341,7 +341,7 @@ class _Patient_ReportsState extends State<Patient_Reports> {
                                     border: Border.all(color: Colors.white),
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(5)),
-                                width: 220,
+                                width: 200,
                                 padding: const EdgeInsets.all(8),
                                 child: RichText(
                                   //remove const when integrating DB

@@ -178,8 +178,8 @@ class _Manage_Info extends State<Manage_Info> {
         Step(
           state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
           isActive: _activeStepIndex >= 0,
-          title: const Text('Basic Information',
-              style: TextStyle(color: Colors.black, fontSize: 15)),
+          title:
+              const Text('Basic Information', style: TextStyle(fontSize: 15)),
           content: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Column(children: [
@@ -190,13 +190,11 @@ class _Manage_Info extends State<Manage_Info> {
                     First_Name.text = '';
                   }
                 },
-                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   prefixIcon:
                       const Icon(Icons.person_2_outlined, color: Colors.blue),
                   labelText: "Fist Name",
                   hintText: 'First Name',
-                  hintStyle: const TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -209,13 +207,11 @@ class _Manage_Info extends State<Manage_Info> {
                     Last_Name.text = '';
                   }
                 },
-                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   prefixIcon:
                       const Icon(Icons.person_2_outlined, color: Colors.blue),
                   labelText: "Last Name",
                   hintText: 'Last Name',
-                  hintStyle: const TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -223,14 +219,11 @@ class _Manage_Info extends State<Manage_Info> {
               addVerticalSpace(8),
               TextField(
                 controller: DOB,
-                style: const TextStyle(
-                    color: Colors.black), //editing controller of this TextField
                 decoration: InputDecoration(
                     prefixIcon:
                         const Icon(Icons.calendar_month, color: Colors.blue),
                     labelText: "Date Of Birth",
                     hintText: 'Date Of Birth',
-                    hintStyle: const TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10))),
                 readOnly:
@@ -274,7 +267,7 @@ class _Manage_Info extends State<Manage_Info> {
                       });
                     },
                   ),
-                  const Text('Male', style: TextStyle(color: Colors.black)),
+                  const Text('Male'),
                   const SizedBox(
                     width: 50,
                   ),
@@ -287,7 +280,7 @@ class _Manage_Info extends State<Manage_Info> {
                       });
                     }, // Make the radio button inactive
                   ),
-                  const Text('Female', style: TextStyle(color: Colors.black)),
+                  const Text('Female'),
                 ],
               ),
               addVerticalSpace(8),
@@ -298,13 +291,11 @@ class _Manage_Info extends State<Manage_Info> {
                     Contact.text = '';
                   }
                 },
-                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   prefixIcon:
                       const Icon(Icons.book_outlined, color: Colors.blue),
                   labelText: "Contact",
                   hintText: 'Contact',
-                  hintStyle: const TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -317,12 +308,10 @@ class _Manage_Info extends State<Manage_Info> {
                     Address.text = '';
                   }
                 },
-                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.location_on, color: Colors.blue),
                   labelText: "Address",
                   hintText: 'Address',
-                  hintStyle: const TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -336,108 +325,100 @@ class _Manage_Info extends State<Manage_Info> {
             isActive: _activeStepIndex >= 1,
             title: const Text(
               'Health Information',
-              style: TextStyle(color: Colors.black),
             ),
-            content: Column(
-              children: [
-                TextField(
-                  controller: HealthInsuranceInfo,
-                  onTap: () {
-                    if (HealthInsuranceInfo.text == 'Not Yet Added') {
-                      HealthInsuranceInfo.text = '';
-                    }
-                  },
-                  style: const TextStyle(color: Colors.black),
-                  maxLines: 3,
-                  autocorrect: true,
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.health_and_safety, color: Colors.blue),
-                    labelText: "Health Insurance Information",
-                    hintText: 'Health Insurance Information',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+            content: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: HealthInsuranceInfo,
+                    onTap: () {
+                      if (HealthInsuranceInfo.text == 'Not Yet Added') {
+                        HealthInsuranceInfo.text = '';
+                      }
+                    },
+                    maxLines: 3,
+                    autocorrect: true,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.health_and_safety,
+                          color: Colors.blue),
+                      labelText: "Health Insurance Information",
+                      hintText: 'Health Insurance Information',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: EmergencyContact,
-                  onTap: () {
-                    if (EmergencyContact.text == 'Not Yet Added') {
-                      EmergencyContact.text = '';
-                    }
-                  },
-                  style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.contact_emergency, color: Colors.blue),
-                    labelText: "Emergency Contact",
-                    hintText: 'Emergency Contact',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  addVerticalSpace(8),
+                  TextField(
+                    controller: EmergencyContact,
+                    onTap: () {
+                      if (EmergencyContact.text == 'Not Yet Added') {
+                        EmergencyContact.text = '';
+                      }
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.contact_emergency,
+                          color: Colors.blue),
+                      labelText: "Emergency Contact",
+                      hintText: 'Emergency Contact',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: MedicalHistory,
-                  onTap: () {
-                    if (MedicalHistory.text == 'Not Yet Added') {
-                      MedicalHistory.text = '';
-                    }
-                  },
-                  style: const TextStyle(color: Colors.black),
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.medical_information_outlined,
-                        color: Colors.blue),
-                    labelText: "Medical History",
-                    hintText: 'Medical History',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  addVerticalSpace(8),
+                  TextField(
+                    controller: MedicalHistory,
+                    onTap: () {
+                      if (MedicalHistory.text == 'Not Yet Added') {
+                        MedicalHistory.text = '';
+                      }
+                    },
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.medical_information_outlined,
+                          color: Colors.blue),
+                      labelText: "Medical History",
+                      hintText: 'Medical History',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: Allergies_Medication,
-                  onTap: () {
-                    if (Allergies_Medication.text == 'Not Yet Added') {
-                      Allergies_Medication.text = '';
-                    }
-                  },
-                  style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    prefixIcon:
-                        const Icon(Icons.medication, color: Colors.blue),
-                    labelText: "Allergies & Medication",
-                    hintText: 'Allergies & Medication',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  addVerticalSpace(8),
+                  TextField(
+                    controller: Allergies_Medication,
+                    onTap: () {
+                      if (Allergies_Medication.text == 'Not Yet Added') {
+                        Allergies_Medication.text = '';
+                      }
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon:
+                          const Icon(Icons.medication, color: Colors.blue),
+                      labelText: "Allergies & Medication",
+                      hintText: 'Allergies & Medication',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                ),
-                addVerticalSpace(8),
-                TextField(
-                  controller: Prefrence,
-                  onTap: () {
-                    if (Prefrence.text == 'Not Yet Added') {
-                      Prefrence.text = '';
-                    }
-                  },
-                  style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.medical_services_outlined,
-                        color: Colors.blue),
-                    labelText: "Preferred Healthcare",
-                    hintText: 'Preferred Healthcare',
-                    hintStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  addVerticalSpace(8),
+                  TextField(
+                    controller: Prefrence,
+                    onTap: () {
+                      if (Prefrence.text == 'Not Yet Added') {
+                        Prefrence.text = '';
+                      }
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.medical_services_outlined,
+                          color: Colors.blue),
+                      labelText: "Preferred Healthcare",
+                      hintText: 'Preferred Healthcare',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )),
         // Step(
         //     state:
@@ -566,11 +547,9 @@ class _Manage_Info extends State<Manage_Info> {
                       ),
                       addHorizontalSpace(30),
                       Text(
-                        'Update : ' + DisplayName,
+                        'Update : $DisplayName',
                         style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700),
+                            fontSize: 22, fontWeight: FontWeight.w700),
                       )
                     ]),
                   ],

@@ -13,6 +13,7 @@ String postModelToJson(List<ProfessionalInformation_Model> data) =>
 
 class ProfessionalInformation_Model {
   ProfessionalInformation_Model({
+    required this.DocumentId,
     required this.ID,
     required this.DoctorID,
     required this.EducationTrainingDetails,
@@ -20,6 +21,7 @@ class ProfessionalInformation_Model {
     required this.LiabilityInsuranceInformation,
   });
 
+  String DocumentId;
   int ID;
   String DoctorID;
   String InsuranceInformation;
@@ -28,6 +30,7 @@ class ProfessionalInformation_Model {
 
   factory ProfessionalInformation_Model.fromJson(Map<String, dynamic> json) =>
       ProfessionalInformation_Model(
+        DocumentId:json["DocumentId"],
         ID: json["ID"],
         DoctorID: json["DoctorID"],
         InsuranceInformation: json["InsuranceInformation"],
@@ -50,6 +53,7 @@ class ProfessionalInformation_Model {
     // print(data["description"]);
     // print(data["status"]);
     return ProfessionalInformation_Model(
+        DocumentId:document.id,
         ID: data["ID"],
         DoctorID: data["DoctorID"],
         InsuranceInformation: data["InsuranceInformation"],

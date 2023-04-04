@@ -93,7 +93,9 @@ class _Doctor_Edit extends State<Doctor_Edit> {
     Specialist.text = widget.dm.Specialist;
     setState(() {
       isLoaded = true;
+      getall();
     });
+    
   }
 
   getdata() {
@@ -103,7 +105,7 @@ class _Doctor_Edit extends State<Doctor_Edit> {
         Certification: Certification.text,
         Gender: GetGender(),
         Last_Name: Last_Name.text,
-        Experience: 0,
+        Experience: int.parse(Experience.text),
         Experties: Experties.text,
         Contact: Contact.text,
         InsuranceID: 0,
@@ -141,18 +143,57 @@ class _Doctor_Edit extends State<Doctor_Edit> {
     }
   }
 
-  profesionalInformation() async {
-    await remort_services().Add_ProffeessionalInformation(
+  String documentID = '';
+  List<ProfessionalInformation_Model>? list;
+  List<ProfessionalInformation_Model>? list1;
+
+  updateprofesionalInformation() async {
+    await remort_services().update_ProffeessionalInformation(
         EducationtrainingID.text,
         InsuranceID.text,
         LiabilityID.text,
         id,
-        widget.dm.InsuranceID);
+        widget.dm.InsuranceID,
+        documentID);
+  }
+
+  getID() async {
+    list = await remort_services().getProfessionalInfoByDoc(widget.dm.id);
+    if (list != null) {
+      documentID = list![0].DocumentId;
+    }
+  }
+
+  getall() async {
+    list1 = await remort_services().getAllProfessionalInfo();
+    if (list1 != null) {
+      List<String> ids = [];
+      for (var i in list1!) {
+        ids.add(i.DoctorID);
+      }
+      if (!ids.contains(widget.dm.id)) {
+        ids.add(widget.dm.id);
+        Add();
+      } else {
+        Update();
+      }
+    }
+  }
+
+  Add() async {
+    await remort_services().Add_ProffeessionalInformation(
+      "Not Yet Added",
+      "Not Yet Added",
+      "Not Yet Added",
+      widget.dm.id,
+      0,
+    );
   }
 
   Future<bool> Update() async {
+    getID();
     if (validate()) {
-      profesionalInformation();
+      updateprofesionalInformation();
       await remort_services().Update_Doctor(getdata(), id);
       return true;
     } else {

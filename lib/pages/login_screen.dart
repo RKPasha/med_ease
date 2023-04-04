@@ -55,216 +55,257 @@ class _LoginScreenState extends State<LoginScreen> {
 
   ThemeProvider themeProvider = ThemeProvider();
 
+  Future<bool?> _onBackPressed() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Exit?'),
+            content: Text('Are you sure you want to exit?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('NO'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text('YES'),
+                onPressed: () {
+                  pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  static Future<void> pop({bool? animated}) async {
+    await SystemChannels.platform
+        .invokeMethod<void>('SystemNavigator.pop', animated);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(5.0, 0, 5.0, 8.0),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: themeProvider.isDark
-                      ? Image.asset(
-                          'assets/images/logo_white.png',
-                          width: MediaQuery.of(context).size.height * 0.4,
-                          height: MediaQuery.of(context).size.height * 0.4,
-                        )
-                      : Image.asset(
-                          'assets/images/logo.png',
-                          width: MediaQuery.of(context).size.height * 0.4,
-                          height: MediaQuery.of(context).size.height * 0.4,
+    return WillPopScope(
+      onWillPop: () async {
+        bool? result = await _onBackPressed();
+        if (result == null) {
+          result = false;
+        }
+        return result;
+      },
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(5.0, 0, 5.0, 8.0),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                    child: themeProvider.isDark
+                        ? Image.asset(
+                            'assets/images/logo_white.png',
+                            width: MediaQuery.of(context).size.height * 0.4,
+                            height: MediaQuery.of(context).size.height * 0.4,
+                          )
+                        : Image.asset(
+                            'assets/images/logo.png',
+                            width: MediaQuery.of(context).size.height * 0.4,
+                            height: MediaQuery.of(context).size.height * 0.4,
+                          ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Login to Your Account',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.robotoSlab(
+                        textStyle: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                         ),
-                ),
-                Center(
-                  child: Text(
-                    'Login to Your Account',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.robotoSlab(
-                      textStyle: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 15),
-                Container(
-                  height: 70,
-                  margin: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                    controller: emailController,
-                    onChanged: (val) {
-                      setState(() {
-                        isEmailCorrect = isEmail(val);
-                      });
-                    },
-                    onTap: () {
-                      showTopSnackBar(
-                        Overlay.of(context),
-                        const CustomSnackBar.info(
-                          message:
-                              'Info: Login button will appear when you enter a valid Email',
+                  const SizedBox(height: 15),
+                  Container(
+                    height: 70,
+                    margin: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      controller: emailController,
+                      onChanged: (val) {
+                        setState(() {
+                          isEmailCorrect = isEmail(val);
+                        });
+                      },
+                      onTap: () {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          const CustomSnackBar.info(
+                            message:
+                                'Info: Login button will appear when you enter a valid Email',
+                          ),
+                        );
+                      },
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.email),
+                        labelText: 'Email',
+                        hintText: "your-email@domain.com",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      );
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.email),
-                      labelText: 'Email',
-                      hintText: "your-email@domain.com",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
                       ),
+                      keyboardType: TextInputType.emailAddress,
                     ),
-                    keyboardType: TextInputType.emailAddress,
                   ),
-                ),
-                Container(
-                  height: 70,
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: <Widget>[
-                      TextFormField(
-                        obscureText: _hidePassword,
-                        controller: passwordController,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _hidePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Colors.grey,
+                  Container(
+                    height: 70,
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: <Widget>[
+                        TextFormField(
+                          obscureText: _hidePassword,
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                // Based on passwordVisible state choose the icon
+                                _hidePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                // Update the state i.e. toogle the state of passwordVisible variable
+                                setState(() {
+                                  _hidePassword = !_hidePassword;
+                                });
+                              },
                             ),
-                            onPressed: () {
-                              // Update the state i.e. toogle the state of passwordVisible variable
+                            labelText: "Password",
+                            hintText: '***********',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Password is required";
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: rememberMe,
+                            onChanged: (value) {
                               setState(() {
-                                _hidePassword = !_hidePassword;
+                                rememberMe = value!;
                               });
                             },
                           ),
-                          labelText: "Password",
-                          hintText: '***********',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                          const Text('Remember me'),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                    ],
+                  ),
+                  isEmailCorrect
+                      ? Container(
+                          margin: const EdgeInsets.all(10.0),
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            onPressed: () {
+                              _loginUser();
+                            }, //loginUser
+                            child: const Text('Login',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                          ),
+                        )
+                      : Container(),
+                  const SizedBox(height: 20),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Already logged in?',
+                      style: TextStyle(
+                          color: themeProvider.isDark
+                              ? Colors.white
+                              : Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      OutlinedButton(
+                        onPressed: () {
+                          _loginSavedUser();
+                        }, //loginSavedUser,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.1),
+                          child: Row(
+                            children: const [
+                              Icon(
+                                Icons.save_rounded,
+                                size: 35,
+                              ),
+                              SizedBox(width: 10),
+                              Icon(
+                                Icons.fingerprint,
+                                size: 35,
+                              ),
+                              SizedBox(width: 10),
+                              Icon(
+                                Icons.face_6,
+                                size: 35,
+                              ),
+                            ],
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Password is required";
-                          }
-                          return null;
-                        },
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: rememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              rememberMe = value!;
-                            });
-                          },
-                        ),
-                        const Text('Remember me'),
-                      ],
-                    ),
-                    const SizedBox(width: 20),
-                  ],
-                ),
-                isEmailCorrect
-                    ? Container(
-                        margin: const EdgeInsets.all(10.0),
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                          ),
-                          onPressed: () {
-                            _loginUser();
-                          }, //loginUser
-                          child: const Text('Login',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                        ),
-                      )
-                    : Container(),
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Already logged in?',
-                    style: TextStyle(
-                        color:
-                            themeProvider.isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    OutlinedButton(
-                      onPressed: () {
-                        _loginSavedUser();
-                      }, //loginSavedUser,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.1),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.save_rounded,
-                              size: 35,
-                            ),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.fingerprint,
-                              size: 35,
-                            ),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.face_6,
-                              size: 35,
-                            ),
-                          ],
+                  const SizedBox(height: 10),
+                  Container(
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, ForgotPasswordScreen.routeName);
+                      },
+                      child: Text(
+                        'Forgot the password?',
+                        style: TextStyle(
+                          color: themeProvider.isDark
+                              ? Colors.white
+                              : Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.center,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, ForgotPasswordScreen.routeName);
-                    },
-                    child: Text(
-                      'Forgot the password?',
-                      style: TextStyle(
-                        color:
-                            themeProvider.isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-              ],
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),

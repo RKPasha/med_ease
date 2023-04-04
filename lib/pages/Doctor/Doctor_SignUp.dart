@@ -59,7 +59,9 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
 
   populate() {
     fetchID();
+    getall();
     print(maxId);
+    getProfessionalInfo();
     id = widget.dm.id;
     First_Name.text = widget.dm.First_Name;
     Last_Name.text = widget.dm.Last_Name;
@@ -74,9 +76,9 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
     LicenseNo.text = widget.dm.LicenseNo;
     Publication.text = widget.dm.Publication;
     Specialist.text = widget.dm.Specialist;
-    LiabilityID.text = widget.dm.LiabilityID.toString();
-    EducationtrainingID.text = widget.dm.EducationTrainingID.toString();
-    InsuranceID.text = widget.dm.InsuranceID.toString();
+    //LiabilityID.text = widget.dm.LiabilityID.toString();
+    // EducationtrainingID.text = widget.dm.EducationTrainingID.toString();
+    //InsuranceID.text = widget.dm.InsuranceID.toString();
     isLoaded = true;
   }
 
@@ -145,9 +147,69 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
     }
   }
 
+  String documentID = '';
+  List<ProfessionalInformation_Model>? list;
+  List<ProfessionalInformation_Model>? list1;
+
+  updateprofesionalInformation() async {
+    await remort_services().update_ProffeessionalInformation(
+        EducationtrainingID.text,
+        InsuranceID.text,
+        LiabilityID.text,
+        id,
+        widget.dm.InsuranceID,
+        documentID);
+  }
+
+  getID() async {
+    list = await remort_services().getProfessionalInfoByDoc(widget.dm.id);
+    if (list != null) {
+      documentID = list![0].DocumentId;
+    }
+  }
+
+  List<ProfessionalInformation_Model>? info;
+  getProfessionalInfo() async {
+    info = await remort_services().getProfessionalInfoByDoc(widget.dm.id);
+    if (info != null) {
+      for (var i in info!) {
+        EducationtrainingID.text = i.EducationTrainingDetails;
+        InsuranceID.text = i.InsuranceInformation;
+        LiabilityID.text = i.LiabilityInsuranceInformation;
+      }
+    }
+  }
+
+  getall() async {
+    list1 = await remort_services().getAllProfessionalInfo();
+    if (list1 != null) {
+      List<String> ids = [];
+      for (var i in list1!) {
+        ids.add(i.DoctorID);
+      }
+      if (!ids.contains(widget.dm.id)) {
+        ids.add(widget.dm.id);
+        Add();
+      } else {
+        Update();
+      }
+    }
+  }
+
+  Add() async {
+    await remort_services().Add_ProffeessionalInformation(
+      "Not Yet Added",
+      "Not Yet Added",
+      "Not Yet Added",
+      widget.dm.id,
+      0,
+    );
+  }
+
   Future<bool> Update() async {
+    getID();
     if (validate()) {
-      profesionalInformation();
+      updateprofesionalInformation();
       await remort_services().Update_Doctor(getdata(), id);
       return true;
     } else {
@@ -286,6 +348,7 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                   }
                 },
                 controller: Email,
+                enabled: false,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.email, color: Colors.blue),
                   labelText: 'Email',
@@ -575,13 +638,21 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                               ),
                             ),
                             addHorizontalSpace(30),
-                            Text(
-                              'Edit : ' +
-                                  widget.dm.First_Name +
-                                  " " +
-                                  widget.dm.Last_Name,
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FittedBox(
+                                    child: Text(
+                                      'Edit :  ${widget.dm.First_Name}  ${widget.dm.Last_Name}',
+                                      style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w700),
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             )
                           ]),
                         ],
@@ -594,12 +665,14 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                       steps: stepList(),
                       onStepContinue: () async {
                         if (_activeStepIndex < (stepList().length - 1)) {
+                          print('Next pressed from doctor');
                           setState(() {
                             _activeStepIndex += 1;
                           });
                         } else {
                           try {
                             if (await Update()) {
+                              if (mounted) {}
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text(' Successfully Updated!')));
@@ -611,6 +684,7 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                                         )),
                               );
                             } else {
+                              if (mounted) {}
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text(

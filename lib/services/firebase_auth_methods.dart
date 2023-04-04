@@ -48,6 +48,7 @@ class FirebaseAuthMethods {
         password: password,
       )
           .then((value) {
+        tempId = value.user!.uid;
         FirebaseFirestore.instance
             .collection('users')
             .doc(value.user!.uid)
@@ -72,7 +73,6 @@ class FirebaseAuthMethods {
           'isDeleted': 0,
           'gender': 'Not Yet Added'
         });
-        tempId = value.user!.uid;
       });
       if (context.mounted) {
         await sendEmailVerification(context);
@@ -111,23 +111,21 @@ class FirebaseAuthMethods {
     required String role,
     required BuildContext context,
   }) async {
-    String tempId = '123';
+    late String tempId;
     // "C:\Users\zain\OneDrive\Desktop\Flutter\medease-1f1df-firebase-adminsdk-za2vw-77783a3e28.json"
     try {
-      await _auth
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      )
-          .then((value) {
-        FirebaseFirestore.instance
+      final UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      tempId = userCredential.user!.uid;
+      if (tempId.isNotEmpty) {
+        await FirebaseFirestore.instance
             .collection('users')
-            .doc(value.user!.uid)
+            .doc(userCredential.user!.uid)
             .set({
-          'uid': value.user!.uid,
+          'uid': userCredential.user!.uid,
           'role': role.toLowerCase(),
           'createdOn': DateFormat.yMMMMd()
-              .format(value.user!.metadata.creationTime!)
+              .format(userCredential.user!.metadata.creationTime!)
               .toString(),
           'certification': "Not Yet Added",
           "educationTrainingID": 0,
@@ -144,19 +142,14 @@ class FirebaseAuthMethods {
           "LicenseNo": "0",
           "publication": "Not Yet Added",
           "specialist": "Not Yet Added",
-          "email": email,
+          "email": userCredential.user!.email,
           "isDeleted": 0
         });
-        tempId = value.user!.uid;
-      });
-      if (context.mounted) {
-        await sendEmailVerification(context);
-      }
-      if (tempId != '123') {
+        if (context.mounted) {
+          await sendEmailVerification(context);
+        }
         String? savedEmail = await _storage.read(key: 'tempEmail');
         String? savedPassword = await _storage.read(key: 'tempPassword');
-        print(savedEmail);
-        print(savedPassword);
         if (context.mounted) {
           loginWithEmail(
             email: savedEmail!,
@@ -165,6 +158,7 @@ class FirebaseAuthMethods {
           );
         }
       }
+
       return tempId;
     } on FirebaseAuthException catch (e) {
       // if you want to display your own custom error message
@@ -186,21 +180,37 @@ class FirebaseAuthMethods {
   }) async {
     Future<bool> val = Future.value(false);
     try {
-      await _auth.signInWithEmailAndPassword(
+      await _auth
+          .signInWithEmailAndPassword(
         email: email,
         password: password,
-      );
-      if (!user.emailVerified) {
-        if (context.mounted) {
-          await sendEmailVerification(context);
-        }
-        await _auth.signOut();
-        val = Future.value(false);
-        // restrict access to certain things using provider
-        // transition to another page instead of home screen
-      } else {
-        val = Future.value(true);
-      }
+      )
+          .then((value) async {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(value.user!.uid)
+            .get()
+            .then((value) async {
+          if (value.data()!['isDeleted'] == 1) {
+            showTopSnackBar(
+              Overlay.of(context),
+              const CustomSnackBar.error(
+                message: 'This account has been deleted by the admin',
+              ),
+            );
+            await _auth.signOut();
+            val = Future.value(false);
+          } else if (!user.emailVerified) {
+            if (context.mounted) {
+              await sendEmailVerification(context);
+            }
+            await _auth.signOut();
+            val = Future.value(false);
+          } else {
+            val = Future.value(true);
+          }
+        });
+      });
     } on FirebaseAuthException catch (e) {
       showTopSnackBar(
         Overlay.of(context),
@@ -315,7 +325,12 @@ class FirebaseAuthMethods {
           ),
         );
         _auth.currentUser!.sendEmailVerification();
-        _auth.signOut();
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .update({'email': email}).then((value) {
+          _auth.signOut();
+        });
       });
     } on FirebaseAuthException catch (e) {
       showTopSnackBar(

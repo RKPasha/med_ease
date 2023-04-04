@@ -273,10 +273,8 @@ class _Admin_ManageState extends State<Admin_Manage> {
                   await remort_services().Delete_Doctor(_doctors![index].id);
                   // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(_doctors![index].First_Name +
-                          " " +
-                          _doctors![index].Last_Name +
-                          ' Successfully Deleted!')));
+                      content: Text(
+                          '${_doctors![index].First_Name} ${_doctors![index].Last_Name} Successfully Deleted!')));
                 } catch (e) {
                   print(e);
                 }
@@ -342,7 +340,7 @@ class _Admin_ManageState extends State<Admin_Manage> {
           ),
           child: SizedBox(
               width: 10000,
-              height: 230,
+              height: 210,
               child: GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -406,9 +404,13 @@ class _Admin_ManageState extends State<Admin_Manage> {
                                 child: SingleChildScrollView(
                                   controller: scollBarController1,
                                   child: SizedBox(
-                                    height: 140,
+                                    height: 120,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.only(
+                                          top: 12,
+                                          right: 12,
+                                          bottom: 12,
+                                          left: 12),
                                       child: RichText(
                                         //remove const when integrating DB
                                         text: TextSpan(

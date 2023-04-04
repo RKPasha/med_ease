@@ -183,6 +183,7 @@ class remort_services {
         "contactNo": dm.Contact,
         "degree": dm.Degree,
         "email": dm.Email,
+        "experience": dm.Experience,
         "experties": dm.Experties,
         "LicenseNo": dm.LicenseNo,
         "publication": dm.Publication,
@@ -349,6 +350,37 @@ class remort_services {
     }
   }
 
+  Future<bool> update_ProffeessionalInformation(String edu, String insurance,
+      String liablity, String doc_ID, int ID, String documentId) async {
+    final update = ref.collection("ProfessionalInformation");
+    try {
+      update.doc(documentId).update({
+        'DoctorID': doc_ID,
+        'EducationTrainingDetails': edu,
+        'InsuranceInformation': insurance,
+        'LiabilityInsuranceInformation': liablity,
+        'ID': ID
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<List<ProfessionalInformation_Model>> getProffeessionalInformation(
+      String docID) async {
+    final snapshot = await ref
+        .collection("ProfessionalInformation")
+        .where("isDeleted", isEqualTo: 0)
+        .where("DoctorID", isEqualTo: docID)
+        .get();
+    final reports = snapshot.docs
+        .map((e) => ProfessionalInformation_Model.fromSnapshot(e))
+        .toList();
+    // print(patients);
+    return reports;
+  }
+
   Future<List<ProfessionalInformation_Model>> getProfessionalInfoByDoc(
       String DocID) async {
     final snapshot = await ref
@@ -383,7 +415,7 @@ class remort_services {
     return data;
   }
 
-Future<List<Report_Model>> getAllReports_byPatient(String patientID) async {
+  Future<List<Report_Model>> getAllReports_byPatient(String patientID) async {
     final snapshot = await ref
         .collection("Reports")
         .where("isDeleted", isEqualTo: 0)
@@ -394,5 +426,4 @@ Future<List<Report_Model>> getAllReports_byPatient(String patientID) async {
     // print(patients);
     return reports;
   }
-
 }

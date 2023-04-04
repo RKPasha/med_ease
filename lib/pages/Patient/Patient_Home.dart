@@ -47,6 +47,7 @@ class _Patient_HomeState extends State<Patient_Home> {
         Populate(patient);
         total_appointments = appointments!.length;
       } else {
+        id = patient![0].id;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -585,6 +586,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 '$First_Name $Last_Name',
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -640,6 +642,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 DOB,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -693,6 +696,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Gender,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -746,6 +750,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Contact,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -799,6 +804,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Address,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -852,6 +858,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 HealthInsuranceID,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -905,6 +912,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 EmergencyContact,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -958,6 +966,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 MedicalHistory,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -1011,6 +1020,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Allergies_Medication,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -1065,6 +1075,7 @@ class _Patient_HomeState extends State<Patient_Home> {
                             children: [
                               Text(
                                 Prefrence,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               GestureDetector(
                                 onTap: () {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:med_ease/pages/Admin/Admin_Home.dart';
 import 'package:med_ease/services/firebase_auth_methods.dart';
+import 'package:med_ease/services/remort_services.dart';
 import 'package:provider/provider.dart';
 import 'package:validators/validators.dart';
 
@@ -120,8 +121,7 @@ class _Admin_AddState extends State<Admin_Add> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  Admin_Home(user: FirebaseAuth.instance.currentUser!)),
+              builder: (context) => Admin_Home(user: widget.user)),
         );
       } else {
         inserted = false;
@@ -249,6 +249,9 @@ class _Admin_AddState extends State<Admin_Add> {
                                     value.isEmpty ||
                                     !isValidName(value.trim())) {
                                   return 'Please enter valid first name';
+                                } else if (value.length < 3 ||
+                                    value.length > 15) {
+                                  return 'Name must be 3-15 characters long';
                                 }
                                 return null;
                               },
@@ -278,6 +281,9 @@ class _Admin_AddState extends State<Admin_Add> {
                                     value.isEmpty ||
                                     !isValidName(value.trim())) {
                                   return 'Please enter valid second name';
+                                } else if (value.length < 3 ||
+                                    value.length > 15) {
+                                  return 'Name must be 3-15 characters long';
                                 }
                                 return null;
                               },
