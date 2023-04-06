@@ -91,7 +91,7 @@ class AuthWrapper extends StatelessWidget {
                 }
                 if (!documentSnapshot.hasData ||
                     !documentSnapshot.data!.exists) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoginScreen();
                 }
                 String role = documentSnapshot.data!.get('role');
                 if (role == "admin") {

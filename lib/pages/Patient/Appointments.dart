@@ -39,7 +39,8 @@ class _AppointmentsState extends State<Appointments> {
   }
 
   Future<bool> getAppointments() async {
-    appointment = await remort_services().getAppointments();
+    appointment =
+        await remort_services().getAppointmentsbyPatient(widget.patient_ID);
     if (appointment != null) {
       setState(() {
         IsLoaded = true;

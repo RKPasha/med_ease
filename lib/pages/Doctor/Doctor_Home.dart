@@ -7,6 +7,7 @@ import 'package:med_ease/pages/Doctor/Doctor_SignUp.dart';
 import 'package:med_ease/pages/Doctor/doctor_side_navbar.dart';
 import 'package:med_ease/services/remort_services.dart';
 import '../../models/Doctors_Model.dart';
+import '../../models/ProfessionalInformation_Model.dart';
 import '../../models/Report_Model.dart';
 import '../../utils/widgets_function.dart';
 import '../Patient/Patient_Side_Menu.dart';
@@ -30,6 +31,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
   List<Appointments_Model>? appointments;
   List<Appointments_Model>? approvedappointments;
   List<Report_Model>? reports;
+  List<ProfessionalInformation_Model>? pii;
   String id = '';
   String contact = '';
   int total_appointments = 0;
@@ -166,10 +168,19 @@ class _Doctor_HomeState extends State<Doctor_Home> {
     }
   }
 
+  getInfo() async {
+    pii = await remort_services().getProffeessionalInformation(id);
+    if (pii != null) {
+      EducationTrainingID = pii![0].EducationTrainingDetails;
+      InsuranceID = pii![0].InsuranceInformation;
+      LiabilityID = pii![0].LiabilityInsuranceInformation;
+    }
+  }
+
   Populate(List<Doctor_Model>? doc) {
     id = doc![0].id;
+    getInfo();
     Certification = doc[0].Certification;
-    EducationTrainingID = doc[0].EducationTrainingID;
     Gender = doc[0].Gender;
     Degree = doc[0].Degree;
     Clinic = doc[0].Clinic;
@@ -178,8 +189,6 @@ class _Doctor_HomeState extends State<Doctor_Home> {
     Experience = doc[0].Experience;
     Experties = doc[0].Experties;
     Contact = doc[0].Contact;
-    InsuranceID = doc[0].InsuranceID;
-    LiabilityID = doc[0].LiabilityID;
     LicenseNo = doc[0].LicenseNo;
     Publication = doc[0].Publication;
     Specialist = doc[0].Specialist;
@@ -216,7 +225,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
   }
 
   String Certification = "";
-  int EducationTrainingID = 0;
+  String EducationTrainingID = "";
   String Gender = "";
   String Degree = "";
   String Clinic = "";
@@ -225,8 +234,8 @@ class _Doctor_HomeState extends State<Doctor_Home> {
   int Experience = 0;
   String Experties = "";
   String Contact = "";
-  int InsuranceID = 0;
-  int LiabilityID = 0;
+  String InsuranceID = "";
+  String LiabilityID = "";
   String LicenseNo = "";
   String Publication = "";
   String Specialist = "";
@@ -271,11 +280,11 @@ class _Doctor_HomeState extends State<Doctor_Home> {
     final hour = now.hour;
     String greeting = '';
     if (hour < 12 && hour >= 5) {
-      greeting = 'Good Morning';
+      greeting = 'Good Morning Dr.';
     } else if (hour >= 12 && hour < 18) {
-      greeting = 'Good Afternoon';
+      greeting = 'Good Afternoon Dr.';
     } else {
-      greeting = 'Good Evening';
+      greeting = 'Good Evening Dr.';
     }
 
     return loaded != true
@@ -344,7 +353,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                (First_Name.length < 10)
+                                (First_Name.length < 8)
                                     ? '$greeting $First_Name'
                                     : '$greeting\n$First_Name',
                                 style: const TextStyle(
@@ -445,7 +454,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
                                               const Text(
-                                                "Reports",
+                                                "Existing Reports",
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14),
@@ -1211,7 +1220,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                       Container(
                         padding: const EdgeInsets.all(15),
                         width: width * 0.8,
-                        height: 80,
+                        height: 50,
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15)),
@@ -1359,7 +1368,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "EducationTrainingID",
+                        "Education Training",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -1469,7 +1478,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "InsuranceID",
+                        "Insurance ID",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],
@@ -1524,7 +1533,7 @@ class _Doctor_HomeState extends State<Doctor_Home> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
-                        "LiabilityID",
+                        "Liability Information",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       )
                     ],

@@ -485,17 +485,12 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value == 'Not Yet Added' ||
-                          value.isEmpty ||
-                          !isValidName(value.trim())) {
-                        return 'Please enter valid education training';
-                      } else if (value.length < 3 || value.length > 20) {
-                        return 'Education training name must be 3-20 characters long';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (EducationtrainingID.text != "") {
+                    //   } else {
+                    //     return "Input Missing!";
+                    //   }
+                    // },
                   ),
                   addVerticalSpace(8),
                   TextFormField(
@@ -569,17 +564,17 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value == 'Not Yet Added' ||
-                          value.isEmpty ||
-                          !isValidName(value.trim())) {
-                        return 'Please enter valid insurance';
-                      } else if (value.length < 3 || value.length > 20) {
-                        return 'Insurance name must be 3-20 characters long';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value == null ||
+                    //       value == 'Not Yet Added' ||
+                    //       value.isEmpty ||
+                    //       !isValidName(value.trim())) {
+                    //     return 'Please enter valid insurance';
+                    //   } else if (value.length < 3 || value.length > 20) {
+                    //     return 'Insurance name must be 3-20 characters long';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                   addVerticalSpace(8),
                   TextFormField(
@@ -597,17 +592,17 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value == 'Not Yet Added' ||
-                          value.isEmpty ||
-                          !isValidName(value.trim())) {
-                        return 'Please enter valid liability';
-                      } else if (value.length < 3 || value.length > 20) {
-                        return 'Liability name must be 3-20 characters long';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value == null ||
+                    //       value == 'Not Yet Added' ||
+                    //       value.isEmpty ||
+                    //       !isValidName(value.trim())) {
+                    //     return 'Please enter valid liability';
+                    //   } else if (value.length < 3 || value.length > 20) {
+                    //     return 'Liability name must be 3-20 characters long';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                   addVerticalSpace(8),
                   TextFormField(
@@ -807,7 +802,10 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                         } else {
                           try {
                             if (_formKey.currentState!.validate() &&
-                                _formKey2.currentState!.validate()) {
+                                _formKey2.currentState!.validate() &&
+                                EducationtrainingID.text != '' &&
+                                InsuranceID.text != '' &&
+                                LiabilityID.text != '') {
                               if (await Update()) {
                                 if (mounted) {}
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -828,6 +826,10 @@ class _Doctor_SignUp extends State<Doctor_SignUp> {
                                         content: Text(
                                             'Input missing or Not yet Filled!')));
                               }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Input Missing!')));
                             }
                           } catch (e) {
                             if (mounted) {}

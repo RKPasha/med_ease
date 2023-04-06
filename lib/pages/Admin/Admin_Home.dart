@@ -14,6 +14,8 @@ import 'package:med_ease/pages/Doctor/Manage_Reports.dart';
 import 'package:med_ease/services/remort_services.dart';
 import 'package:med_ease/utils/widgets_function.dart';
 
+import 'Manage_Deactivated.dart';
+
 class Admin_Home extends StatefulWidget {
   final User user;
   const Admin_Home({super.key, required this.user});
@@ -59,10 +61,11 @@ class _Admin_HomeState extends State<Admin_Home> {
     return List<DataRow>.generate(
         allPatients!.length,
         (index) => DataRow(cells: [
-              DataCell(Text(
-                  '${allPatients![index].First_Name} ${allPatients![index].Last_Name}')),
-              DataCell(Text(allPatients![index].Contact)),
-              DataCell(Text(allPatients![index].Prefrence)),
+              DataCell(FittedBox(
+                child: Text(
+                    '${allPatients![index].First_Name} ${allPatients![index].Last_Name}'),
+              )),
+              DataCell(FittedBox(child: Text(allPatients![index].Contact))),
             ]));
   }
 
@@ -549,6 +552,60 @@ class _Admin_HomeState extends State<Admin_Home> {
                                     )),
                               ),
                             ),
+                            addVerticalSpace(10),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Manage_Deactivated(
+                                            user: widget.user,
+                                            manage: '',
+                                          )),
+                                );
+                              },
+                              child: Container(
+                                width: width * 0.90,
+                                padding: const EdgeInsets.only(right: 0),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.blue),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.manage_accounts_outlined,
+                                              color: Colors.white,
+                                              size: 25,
+                                            ),
+                                            addHorizontalSpace(10),
+                                            const Text(
+                                              "Mange Deactivated Accounts",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.chevron_right_outlined,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -564,7 +621,7 @@ class _Admin_HomeState extends State<Admin_Home> {
                                 'Recent Data',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  fontWeight: FontWeight.w300,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
@@ -601,16 +658,13 @@ class _Admin_HomeState extends State<Admin_Home> {
                                       Colors.white),
                                   border: TableBorder(
                                       borderRadius: BorderRadius.circular(15)),
-                                  columnSpacing: width * 0.11,
+                                  columnSpacing: width * 0.10,
                                   columns: const [
                                     DataColumn(
-                                      label: Text('Patient'),
+                                      label: FittedBox(child: Text('Patient')),
                                     ),
                                     DataColumn(
-                                      label: Text('Contact'),
-                                    ),
-                                    DataColumn(
-                                      label: Text('Preference'),
+                                      label: FittedBox(child: Text('Contact')),
                                     ),
                                   ],
                                   rows: populateTable(),

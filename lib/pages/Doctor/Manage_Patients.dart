@@ -90,6 +90,7 @@ class _Manage_PatientsState extends State<Manage_Patients> {
   List<String> ids = [];
 
   SearchPatientByID(String Query) {
+    bool check = false;
     for (int i = 0; i < all_patients!.length; i++) {
       if (all_patients![i].id == Query) {
         Patient_Model pm = Patient_Model(
@@ -116,6 +117,11 @@ class _Manage_PatientsState extends State<Manage_Patients> {
           allpatients!.add(pm);
         }
 
+        patients!.removeWhere((element) => element.id == "1");
+        allpatients!.removeWhere((element) => element.id == "1");
+        check = true;
+      }
+      if (check == false) {
         patients!.removeWhere((element) => element.id == "1");
         allpatients!.removeWhere((element) => element.id == "1");
       }
@@ -270,33 +276,33 @@ class _Manage_PatientsState extends State<Manage_Patients> {
           key: Key(patients![index].id),
 
           // The start action pane is the one at the left or the top side.
-          startActionPane: ActionPane(
-            // A motion is a widget used to control how the pane animates.
-            motion: const ScrollMotion(),
+          // startActionPane: ActionPane(
+          //   // A motion is a widget used to control how the pane animates.
+          //   motion: const ScrollMotion(),
 
-            // A pane can dismiss the Slidable.
-            dismissible: DismissiblePane(
-              key: Key(patients![index].id),
-              onDismissed: () {
-                remort_services().Delete(patients![index].id);
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('dismissed')));
-              },
-            ),
+          //   // A pane can dismiss the Slidable.
+          //   dismissible: DismissiblePane(
+          //     key: Key(patients![index].id),
+          //     onDismissed: () {
+          //       remort_services().Delete(patients![index].id);
+          //       // Then show a snackbar.
+          //       ScaffoldMessenger.of(context)
+          //           .showSnackBar(const SnackBar(content: Text('dismissed')));
+          //     },
+          //   ),
 
-            // All actions are defined in the children parameter.
-            children: const [
-              // A SlidableAction can have an icon and/or a label.
-              SlidableAction(
-                onPressed: null,
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.blue,
-                icon: Icons.delete,
-                label: 'Swipe Right to Delete',
-              ),
-            ],
-          ),
+          //   // All actions are defined in the children parameter.
+          //   children: const [
+          //     // A SlidableAction can have an icon and/or a label.
+          //     SlidableAction(
+          //       onPressed: null,
+          //       backgroundColor: Colors.white,
+          //       foregroundColor: Colors.blue,
+          //       icon: Icons.delete,
+          //       label: 'Swipe Right to Delete',
+          //     ),
+          //   ],
+          // ),
 
           // The end action pane is the one at the right or the bottom side.
           endActionPane: ActionPane(

@@ -7,6 +7,7 @@ import 'package:med_ease/pages/Patient/Manage_Info.dart';
 import 'package:med_ease/pages/Patient/patient_side_navbar.dart';
 import 'package:med_ease/services/remort_services.dart';
 import '../../models/Patient_Model.dart';
+import '../../models/ProfessionalInformation_Model.dart';
 import '../../utils/widgets_function.dart';
 import 'Appointments.dart';
 import 'Make_Appointment.dart';
@@ -24,7 +25,7 @@ class Patient_Home extends StatefulWidget {
 class _Patient_HomeState extends State<Patient_Home> {
   List<Patient_Model>? all_patients;
   List<Patient_Model>? patient;
-  List<Appointments_Model>? appointments;
+  List<Appointments_Model>? appointments; 
   String id = '';
   String contact = '';
   int total_appointments = 0;
@@ -45,9 +46,14 @@ class _Patient_HomeState extends State<Patient_Home> {
       patient = Suggestions;
       if (patient![0].Contact != "Not Yet Added") {
         Populate(patient);
-        total_appointments = appointments!.length;
+        Future.delayed(const Duration(milliseconds: 500), () {
+          setState(() {
+            total_appointments = List1!.length;
+          });
+        });
       } else {
         id = patient![0].id;
+       
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -78,8 +84,14 @@ class _Patient_HomeState extends State<Patient_Home> {
     Information = patient[0].Information;
     contact = patient[0].Contact;
     setState(() {
+      getAppointment(id);
       loaded = true;
     });
+  }
+
+  List<Appointments_Model>? List1;
+  getAppointment(String patientID) async {
+    List1 = await remort_services().getAppointmentsbyPatient(patientID);
   }
 
   Data(List<Patient_Model>? patient) {

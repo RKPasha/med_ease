@@ -186,7 +186,7 @@ class FirebaseAuthMethods {
             showTopSnackBar(
               Overlay.of(context),
               const CustomSnackBar.error(
-                message: 'This account has been deleted by the admin',
+                message: 'This account has been deactivated by the admin',
               ),
             );
             await _auth.signOut();

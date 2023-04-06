@@ -50,6 +50,18 @@ class remort_services {
     return patients;
   }
 
+  Future<List<Patient_Model>> getDeactivatedPatients() async {
+    final snapshot = await ref
+        .collection("users")
+        .where("role", isEqualTo: "patient")
+        .where("isDeleted", isEqualTo: 1)
+        .get();
+    final patients =
+        snapshot.docs.map((e) => Patient_Model.fromSnapshot(e)).toList();
+    // print(patients);
+    return patients;
+  }
+
   Future<List<Patient_Model>> getPatientsById(String ID) async {
     final snapshot = await ref
         .collection("users")
@@ -99,6 +111,19 @@ class remort_services {
     } catch (e) {
       return false;
     }
+  }
+
+  Future<List<Appointments_Model>> getAppointmentsbyPatient(
+      String patientID) async {
+    final snapshot = await ref
+        .collection("Appointments")
+        .where("PatientID", isEqualTo: patientID)
+        .where("isDeleted", isEqualTo: 0)
+        .get();
+    final appointments =
+        snapshot.docs.map((e) => Appointments_Model.fromSnapshot(e)).toList();
+    // print(patients);
+    return appointments;
   }
 
   Future<List<Appointments_Model>> getAppointments() async {
@@ -164,6 +189,18 @@ class remort_services {
     final snapshot = await ref
         .collection("users")
         .where("isDeleted", isEqualTo: 0)
+        .where("role", isEqualTo: 'doctor')
+        .get();
+    final data =
+        snapshot.docs.map((e) => Doctor_Model.fromSnapshot(e)).toList();
+    print(data);
+    return data;
+  }
+
+  Future<List<Doctor_Model>> getDeactivatedDoctors() async {
+    final snapshot = await ref
+        .collection("users")
+        .where("isDeleted", isEqualTo: 1)
         .where("role", isEqualTo: 'doctor')
         .get();
     final data =
@@ -371,7 +408,6 @@ class remort_services {
       String docID) async {
     final snapshot = await ref
         .collection("ProfessionalInformation")
-        .where("isDeleted", isEqualTo: 0)
         .where("DoctorID", isEqualTo: docID)
         .get();
     final reports = snapshot.docs
@@ -425,5 +461,27 @@ class remort_services {
         snapshot.docs.map((e) => Report_Model.fromSnapshot(e)).toList();
     // print(patients);
     return reports;
+  }
+
+  Future<bool> ActivateDoctor(String id) async {
+    print(id);
+    final delete = ref.collection("users");
+    try {
+      delete.doc(id).update({"isDeleted": 0});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> ActivatePatient(String id) async {
+    print(id);
+    final delete = ref.collection("users");
+    try {
+      delete.doc(id).update({"isDeleted": 0});
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

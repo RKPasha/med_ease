@@ -288,8 +288,8 @@ class _Admin_ManageState extends State<Admin_Manage> {
                 onPressed: null,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.blue,
-                icon: Icons.delete,
-                label: 'Swipe Right to Delete',
+                icon: Icons.cancel_sharp,
+                label: 'De-Activate Account?',
               ),
             ],
           ),
@@ -407,69 +407,71 @@ class _Admin_ManageState extends State<Admin_Manage> {
                                     height: 120,
                                     child: Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 12,
-                                          right: 12,
-                                          bottom: 12,
-                                          left: 12),
-                                      child: RichText(
-                                        //remove const when integrating DB
-                                        text: TextSpan(
-                                            style: const TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.black,
-                                            ),
-                                            children: <TextSpan>[
-                                              const TextSpan(
-                                                  text: 'Name \t: ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                  text:
-                                                      "${_doctors![index].First_Name} ${_doctors![index].Last_Name}"),
-                                              const TextSpan(
-                                                  text: '\nDegree : ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                  text:
-                                                      _doctors![index].Degree),
-                                              const TextSpan(
-                                                  text: '\nLicense No. : ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                  text: _doctors![index]
-                                                      .LicenseNo),
-                                              const TextSpan(
-                                                  text: '\nSpecializations : ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                  text: _doctors![index]
-                                                      .Specialist),
-                                              const TextSpan(
-                                                  text: '\nClinic : ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                  text:
-                                                      _doctors![index].Clinic),
-                                            ]),
+                                          top: 8, right: 8, bottom: 8, left: 8),
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                        alignment: Alignment.centerLeft,
+                                        child: RichText(
+                                          //remove const when integrating DB
+                                          text: TextSpan(
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black,
+                                              ),
+                                              children: <TextSpan>[
+                                                const TextSpan(
+                                                    text: 'Name \t: ',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text:
+                                                        "${_doctors![index].First_Name} ${_doctors![index].Last_Name}"),
+                                                const TextSpan(
+                                                    text: '\nDegree : ',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: _doctors![index]
+                                                        .Degree),
+                                                const TextSpan(
+                                                    text: '\nLicense No. : ',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: _doctors![index]
+                                                        .LicenseNo),
+                                                const TextSpan(
+                                                    text:
+                                                        '\nSpecializations : ',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: _doctors![index]
+                                                        .Specialist),
+                                                const TextSpan(
+                                                    text: '\nClinic : ',
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: _doctors![index]
+                                                        .Clinic),
+                                              ]),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -726,10 +728,39 @@ class _Admin_ManageState extends State<Admin_Manage> {
             dismissible: DismissiblePane(
               key: Key(patients![index].id),
               onDismissed: () {
+                // Widget cancelButton = TextButton(
+                //   child: Text("Cancel"),
+                //   onPressed: () {
+                //     Navigator.of(context).pop();
+                //   },
+                // );
+                // Widget continueButton = TextButton(
+                //   child: Text("Continue"),
+                //   onPressed: () {
+
+                //   },
+                // );
+                // // set up the AlertDialog
+                // AlertDialog alert = AlertDialog(
+                //   title: const Text("Confirm Deactivate?"),
+                //   content: const Text(
+                //       "Are you sure you want to deactivate this account?"),
+                //   actions: [
+                //     cancelButton,
+                //     continueButton,
+                //   ],
+                // );
+                // // show the dialog
+                // showDialog(
+                //   context: context,
+                //   builder: (BuildContext context) {
+                //     return alert;
+                //   },
+                // );
                 remort_services().Delete(patients![index].id);
                 // Then show a snackbar.
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('dismissed')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Account Deactivated!')));
               },
             ),
 
@@ -740,8 +771,8 @@ class _Admin_ManageState extends State<Admin_Manage> {
                 onPressed: null,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.blue,
-                icon: Icons.delete,
-                label: 'Swipe Right to Delete',
+                icon: Icons.cancel_sharp,
+                label: 'De-Activate Account?',
               ),
             ],
           ),
@@ -795,7 +826,7 @@ class _Admin_ManageState extends State<Admin_Manage> {
           ),
           child: SizedBox(
               width: 10000,
-              height: 180,
+              height: 190,
               child: GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -857,50 +888,63 @@ class _Admin_ManageState extends State<Admin_Manage> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(5)),
                                 width: 220,
-                                padding: const EdgeInsets.all(8),
-                                child: RichText(
-                                  //remove const when integrating DB
-                                  text: TextSpan(
-                                      style: const TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black,
-                                      ),
-                                      children: <TextSpan>[
-                                        const TextSpan(
-                                            text: 'Name : ',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.black)),
-                                        TextSpan(
-                                            text: patients?[index].First_Name),
-                                        const TextSpan(text: " "),
-                                        TextSpan(
-                                            text: patients?[index].Last_Name),
-                                        const TextSpan(
-                                            text: '\nGender : ',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.black)),
-                                        TextSpan(text: patients?[index].Gender),
-                                        const TextSpan(
-                                            text: '\nContact: ',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.black)),
-                                        TextSpan(
-                                            text: patients?[index].Contact),
-                                        const TextSpan(
-                                            text: '\nPreference : ',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.black)),
-                                        TextSpan(
-                                            text: patients?[index].Prefrence),
-                                      ]),
+                                height: 100,
+                                // padding: const EdgeInsets.all(8),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 8, bottom: 8, left: 8, right: 8),
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    alignment: Alignment.centerLeft,
+                                    child: RichText(
+                                      //remove const when integrating DB
+                                      text: TextSpan(
+                                          style: const TextStyle(
+                                            fontSize: 14.0,
+                                            color: Colors.black,
+                                          ),
+                                          children: <TextSpan>[
+                                            const TextSpan(
+                                                text: 'Name : ',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text: patients?[index]
+                                                    .First_Name),
+                                            const TextSpan(text: " "),
+                                            TextSpan(
+                                                text:
+                                                    patients?[index].Last_Name),
+                                            const TextSpan(
+                                                text: '\nGender : ',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text: patients?[index].Gender),
+                                            const TextSpan(
+                                                text: '\nContact: ',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text: patients?[index].Contact),
+                                            const TextSpan(
+                                                text: '\nPreference : ',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text:
+                                                    patients?[index].Prefrence),
+                                          ]),
+                                    ),
+                                  ),
                                 ),
                               ),
                               Column(
